@@ -1,2 +1,2 @@
-# totp-php
-Simple, Fast &amp; Secure TOTP Auth for PHP
+# TOTP PHP
+Simple, Fast & Secure TOTP (aka 2FA) Auth library for PHP.
