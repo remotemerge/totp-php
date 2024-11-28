@@ -1,0 +1,20 @@
+services:
+  totp-server:
+    image: webdevops/php-nginx:8.1-alpine
+    user: application
+    working_dir: /var/www/html
+    volumes:
+      - './html/:/var/www/html'
+      - './scripts/50-project.sh:/opt/docker/provision/entrypoint.d/50-project.sh'
+    ports:
+      - '8080:80'
+    environment:
+      - COMPOSER_ROOT_VERSION=2
+      - COMPOSER_VERSION=2
+      - WEB_DOCUMENT_ROOT=/var/www/html/public
+    healthcheck:
+      test: [ 'CMD', 'curl', '-f', 'http://localhost:8080' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
