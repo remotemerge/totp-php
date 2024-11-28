@@ -38,7 +38,8 @@
   "extra": {},
   "autoload": {
     "psr-4": {
-      "RemoteMerge\\Auth\\": "src"
+      "RemoteMerge\\Totp\\": "src/Totp",
+      "RemoteMerge\\Utils\\": "src/Utils"
     }
   },
   "autoload-dev": {

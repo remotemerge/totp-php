@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace RemoteMerge\Auth\Totp;
+namespace RemoteMerge\Totp;
 
 use Exception;
-use RemoteMerge\Auth\Utils\Base32;
+use RemoteMerge\Utils\Base32;
 
 final class Totp extends AbstractTotp
 {

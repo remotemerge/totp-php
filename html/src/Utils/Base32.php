@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RemoteMerge\Auth\Utils;
+namespace RemoteMerge\Utils;
 
 use InvalidArgumentException;
 
