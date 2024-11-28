@@ -7,7 +7,7 @@ namespace RemoteMerge\Auth\Totp;
 use Exception;
 use RemoteMerge\Auth\Utils\Base32;
 
-class Totp extends AbstractTotp
+final class Totp extends AbstractTotp
 {
     /**
      * Generates a secret key for TOTP.
