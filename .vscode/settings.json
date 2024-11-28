@@ -1,0 +1,16 @@
+{
+  "editor.fontFamily": "JetBrains Mono, Consolas, monospace",
+  "editor.fontSize": 12,
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "files.autoSave": "onFocusChange",
+  "editor.indentSize": 2,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.lineNumbers": "on",
+  "editor.matchBrackets": "always",
+  "editor.rulers": [120],
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "prettier.endOfLine": "lf",
+  "prettier.singleQuote": true
+}
