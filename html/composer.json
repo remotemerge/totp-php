@@ -1,0 +1,51 @@
+{
+  "name": "remotemerge/totp-php",
+  "version": "1.0.0",
+  "type": "library",
+  "description": "Simple, Fast & Secure TOTP (aka 2FA) Auth library for PHP.",
+  "homepage": "https://github.com/remotemerge/totp-php",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Madan Sapkota",
+      "email": "contact+github@madansapkota.com",
+      "homepage": "https://madansapkota.com"
+    }
+  ],
+  "keywords": [
+    "2fa",
+    "auth",
+    "authentication",
+    "otp",
+    "security",
+    "totp",
+    "two-factor"
+  ],
+  "require": {
+    "php": "^8.1"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.62.0",
+    "phpunit/phpunit": "^10.5.30",
+    "rector/rector": "^1.2.4"
+  },
+  "config": {
+    "discard-changes": true,
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "extra": {},
+  "autoload": {
+    "psr-4": {
+      "RemoteMerge\\Auth\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}
