@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace RemoteMerge\Utils;
 
-use InvalidArgumentException;
+use RemoteMerge\Totp\TotpException;
 
 final class Base32
 {
@@ -37,7 +37,7 @@ final class Base32
      *
      * @param string $data The Base32 encoded string.
      * @return string The decoded binary data.
-     * @throws InvalidArgumentException If the input is not a valid Base32 string.
+     * @throws TotpException If the input is not a valid Base32 string.
      */
     public static function decodeUpper(string $data): string
     {
@@ -47,7 +47,7 @@ final class Base32
         foreach (str_split($data) as $char) {
             $position = strpos(self::CHARACTERS, $char);
             if ($position === false) {
-                throw new InvalidArgumentException('Invalid Base32 string.');
+                throw new TotpException('Invalid Base32 string.');
             }
             $binary .= str_pad(decbin($position), 5, '0', STR_PAD_LEFT);
         }
