@@ -1,7 +1,5 @@
 # **TOTP PHP: The Ultimate 2FA Library for PHP**
 
-[![X (formerly Twitter)](https://img.shields.io/badge/-@sapkotamadan-white?style=flat&logo=x&label=(formerly%20Twitter))](https://twitter.com/sapkotamadan)
-[![Facebook](https://img.shields.io/badge/Facebook-NextSapkotaMadan-blue?style=flat&logo=facebook)](https://www.facebook.com/NextSapkotaMadan)
 ![PHP Version](https://img.shields.io/packagist/php-v/remotemerge/totp-php)
 ![Build](https://img.shields.io/github/actions/workflow/status/remotemerge/totp-php/install.yml?style=flat&logo=github)
 [![Downloads](https://img.shields.io/packagist/dt/remotemerge/totp-php.svg?style=flat&label=Downloads)](https://packagist.org/packages/remotemerge/totp-php)
