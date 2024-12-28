@@ -316,3 +316,6 @@ The contributions of the **Open Source community** are highly valued and appreci
 - **Pull Requests**: Please make pull requests to the `main` branch.
 
 Thank you for your support and contributions. Looking forward to reviewing your code and building something amazing together!
+
+## **Screenshots**
+![Screenshot 1](public/img/demo.png)
