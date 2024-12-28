@@ -26,7 +26,7 @@ final class Base32
      */
     public static function encodeUpper(string $data): string
     {
-        if (empty($data)) {
+        if ($data === '') {
             return '';
         }
 
@@ -62,7 +62,7 @@ final class Base32
      */
     public static function decodeUpper(string $data): string
     {
-        if (empty($data)) {
+        if ($data === '') {
             return '';
         }
 
@@ -76,6 +76,7 @@ final class Base32
             if ($position === false) {
                 throw new TotpException('Invalid Base32 character: ' . $char);
             }
+
             $binary .= str_pad(decbin($position), 5, '0', STR_PAD_LEFT);
         }
 

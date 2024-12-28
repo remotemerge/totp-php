@@ -11,7 +11,6 @@ interface TotpInterface
      *
      * @param array<string, mixed> $options An associative array of configuration options.
      *        Supported options: 'algorithm' (string), 'digits' (int), 'period' (int).
-     * @return void
      */
     public function configure(array $options): void;
 

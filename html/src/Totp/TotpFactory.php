@@ -18,7 +18,7 @@ final class TotpFactory
     {
         $totp = new Totp();
 
-        if (!empty($options)) {
+        if ($options !== []) {
             $totp->configure($options);
         }
 

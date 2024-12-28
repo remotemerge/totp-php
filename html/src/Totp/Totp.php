@@ -22,6 +22,7 @@ final class Totp extends AbstractTotp implements TotpInterface
             if (!in_array($options['algorithm'], self::SUPPORTED_ALGORITHMS, true)) {
                 throw new TotpException('Unsupported hash algorithm.');
             }
+
             $this->algorithm = $options['algorithm'];
         }
 
@@ -29,6 +30,7 @@ final class Totp extends AbstractTotp implements TotpInterface
             if (!is_int($options['digits']) || $options['digits'] <= 0) {
                 throw new TotpException('Digits must be a positive integer.');
             }
+
             $this->digits = $options['digits'];
         }
 
@@ -36,6 +38,7 @@ final class Totp extends AbstractTotp implements TotpInterface
             if (!is_int($options['period']) || $options['period'] <= 0) {
                 throw new TotpException('Period must be a positive integer.');
             }
+
             $this->period = $options['period'];
         }
     }
@@ -80,8 +83,8 @@ final class Totp extends AbstractTotp implements TotpInterface
     {
         try {
             return Base32::encodeUpper(random_bytes(20)); // 20 bytes = 160 bits, standard for TOTP
-        } catch (Exception $e) {
-            throw new TotpException('Failed to generate secret key.', 0, $e);
+        } catch (Exception $exception) {
+            throw new TotpException('Failed to generate secret key.', 0, $exception);
         }
     }
 
