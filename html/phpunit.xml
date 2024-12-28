@@ -6,7 +6,7 @@
   <testsuites>
     <testsuite name="feature">
       <directory>tests/Feature</directory>
-      <exclude>tests/Unit</exclude>
+      <directory>tests/Unit</directory>
     </testsuite>
   </testsuites>
 </phpunit>
