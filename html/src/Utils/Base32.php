@@ -8,7 +8,15 @@ use RemoteMerge\Totp\TotpException;
 
 final class Base32
 {
+    /**
+     * The characters used in Base32 encoding.
+     */
     private const CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+
+    /**
+     * The padding character used in Base32 encoding.
+     */
+    private const PADDING_CHAR = '=';
 
     /**
      * Encodes binary data to Base32.
@@ -18,18 +26,31 @@ final class Base32
      */
     public static function encodeUpper(string $data): string
     {
+        if (empty($data)) {
+            return '';
+        }
+
         $binary = '';
-        foreach (str_split($data) as $char) {
-            $binary .= str_pad(decbin(ord($char)), 8, '0', STR_PAD_LEFT);
+        $length = strlen($data);
+        for ($i = 0; $i < $length; ++$i) {
+            $binary .= str_pad(decbin(ord($data[$i])), 8, '0', STR_PAD_LEFT);
         }
 
         $output = '';
-        foreach (str_split($binary, 5) as $chunk) {
+        $binaryLength = strlen($binary);
+        for ($i = 0; $i < $binaryLength; $i += 5) {
+            $chunk = substr($binary, $i, 5);
             $chunk = str_pad($chunk, 5, '0');
             $output .= self::CHARACTERS[bindec($chunk)];
         }
 
-        return rtrim(str_pad($output, ceil(strlen($output) / 8) * 8, '='), '=');
+        // Add padding if necessary
+        $padding = strlen($output) % 8;
+        if ($padding !== 0) {
+            $output .= str_repeat(self::PADDING_CHAR, 8 - $padding);
+        }
+
+        return $output;
     }
 
     /**
@@ -41,19 +62,27 @@ final class Base32
      */
     public static function decodeUpper(string $data): string
     {
-        $data = rtrim($data, '=');
+        if (empty($data)) {
+            return '';
+        }
+
+        $data = rtrim($data, self::PADDING_CHAR);
         $binary = '';
 
-        foreach (str_split($data) as $char) {
+        $length = strlen($data);
+        for ($i = 0; $i < $length; ++$i) {
+            $char = $data[$i];
             $position = strpos(self::CHARACTERS, $char);
             if ($position === false) {
-                throw new TotpException('Invalid Base32 string.');
+                throw new TotpException('Invalid Base32 character: ' . $char);
             }
             $binary .= str_pad(decbin($position), 5, '0', STR_PAD_LEFT);
         }
 
         $output = '';
-        foreach (str_split($binary, 8) as $byte) {
+        $binaryLength = strlen($binary);
+        for ($i = 0; $i < $binaryLength; $i += 8) {
+            $byte = substr($binary, $i, 8);
             if (strlen($byte) === 8) {
                 $output .= chr(bindec($byte));
             }
