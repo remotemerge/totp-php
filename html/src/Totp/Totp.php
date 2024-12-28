@@ -10,6 +10,37 @@ use RemoteMerge\Utils\Base32;
 final class Totp extends AbstractTotp implements TotpInterface
 {
     /**
+     * Configures the TOTP parameters.
+     *
+     * @param array<string, mixed> $options An associative array of configuration options.
+     *        Supported options: 'algorithm' (string), 'digits' (int), 'period' (int).
+     * @throws TotpException If an unsupported algorithm is provided or if options are invalid.
+     */
+    public function configure(array $options): void
+    {
+        if (isset($options['algorithm'])) {
+            if (!in_array($options['algorithm'], self::SUPPORTED_ALGORITHMS, true)) {
+                throw new TotpException('Unsupported hash algorithm.');
+            }
+            $this->algorithm = $options['algorithm'];
+        }
+
+        if (isset($options['digits'])) {
+            if (!is_int($options['digits']) || $options['digits'] <= 0) {
+                throw new TotpException('Digits must be a positive integer.');
+            }
+            $this->digits = $options['digits'];
+        }
+
+        if (isset($options['period'])) {
+            if (!is_int($options['period']) || $options['period'] <= 0) {
+                throw new TotpException('Period must be a positive integer.');
+            }
+            $this->period = $options['period'];
+        }
+    }
+
+    /**
      * Generates a secret key for TOTP.
      *
      * @return string The generated secret key in Base32 format.
@@ -92,36 +123,5 @@ final class Totp extends AbstractTotp implements TotpInterface
         $issuer = rawurlencode($issuer);
 
         return sprintf($strUri, $label, $secret, $issuer, $this->algorithm, $this->digits, $this->period);
-    }
-
-    /**
-     * Configures the TOTP parameters.
-     *
-     * @param array<string, mixed> $options An associative array of configuration options.
-     *        Supported options: 'algorithm' (string), 'digits' (int), 'period' (int).
-     * @throws TotpException If an unsupported algorithm is provided or if options are invalid.
-     */
-    public function configure(array $options): void
-    {
-        if (isset($options['algorithm'])) {
-            if (!in_array($options['algorithm'], self::SUPPORTED_ALGORITHMS, true)) {
-                throw new TotpException('Unsupported hash algorithm.');
-            }
-            $this->algorithm = $options['algorithm'];
-        }
-
-        if (isset($options['digits'])) {
-            if (!is_int($options['digits']) || $options['digits'] <= 0) {
-                throw new TotpException('Digits must be a positive integer.');
-            }
-            $this->digits = $options['digits'];
-        }
-
-        if (isset($options['period'])) {
-            if (!is_int($options['period']) || $options['period'] <= 0) {
-                throw new TotpException('Period must be a positive integer.');
-            }
-            $this->period = $options['period'];
-        }
     }
 }
