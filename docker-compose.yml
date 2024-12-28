@@ -1,7 +1,6 @@
 services:
   totp-server:
     image: webdevops/php-nginx:8.1-alpine
-    user: application
     working_dir: /var/www/html
     volumes:
       - './html/:/var/www/html'
