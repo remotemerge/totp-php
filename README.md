@@ -308,6 +308,13 @@ Bugs and feature requests are tracked using GitHub issues, and they are prioriti
 
 ---
 
-### **License**
+## **Contribution**
 
-Licensed under the [MIT License](LICENSE).
+The contributions of the **Open Source community** are highly valued and appreciated. To ensure a smooth and efficient process, please adhere to the following guidelines when submitting code:
+
+- **Coding Standards**: Ensure that the code adheres to [PER Coding Style 2.0](https://www.php-fig.org/per/coding-style/) standards.
+- **Testing**: All submitted code must pass relevant tests to maintain the library’s reliability.
+- **Documentation**: Proper documentation and clean code practices are essential for maintainability.
+- **Pull Requests**: Please make pull requests to the `main` branch.
+
+Thank you for your support and contributions. Looking forward to reviewing your code and building something amazing together!
