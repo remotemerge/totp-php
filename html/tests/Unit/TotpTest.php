@@ -65,7 +65,7 @@ final class TotpTest extends TestCase
     {
         $totp = new Totp();
         $secret = 'JBSWY3DPEHPK3PXP';
-        $code = $totp->getCode($secret, (int)(time() / 30 - 1)); // Previous time slice
+        $code = $totp->getCode($secret, (int) (time() / 30 - 1)); // Previous time slice
         $this->assertTrue($totp->verifyCode($secret, $code, 1));
     }
 

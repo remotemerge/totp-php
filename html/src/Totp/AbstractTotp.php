@@ -59,7 +59,7 @@ abstract class AbstractTotp
      */
     protected function getCurrentTimeSlice(): int
     {
-        return (int)floor(time() / $this->period);
+        return (int) floor(time() / $this->period);
     }
 
     /**

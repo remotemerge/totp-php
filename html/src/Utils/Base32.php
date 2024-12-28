@@ -57,8 +57,8 @@ final class Base32
      * Decodes a Base32 encoded string to binary data.
      *
      * @param string $data The Base32 encoded string.
-     * @return string The decoded binary data.
      * @throws TotpException If the input is not a valid Base32 string.
+     * @return string The decoded binary data.
      */
     public static function decodeUpper(string $data): string
     {

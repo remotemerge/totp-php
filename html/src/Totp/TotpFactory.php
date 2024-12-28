@@ -11,8 +11,8 @@ final class TotpFactory
      *
      * @param array<string, mixed> $options Configuration options for the TOTP instance.
      *        Supported options: 'algorithm' (string), 'digits' (int), 'period' (int).
-     * @return TotpInterface A configured TOTP instance.
      * @throws TotpException If the configuration options are invalid.
+     * @return TotpInterface A configured TOTP instance.
      */
     public static function create(array $options = []): TotpInterface
     {
