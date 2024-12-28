@@ -3,8 +3,8 @@ services:
     image: webdevops/php-nginx:8.1-alpine
     working_dir: /var/www/html
     volumes:
-      - './html/:/var/www/html'
-      - './scripts/50-project.sh:/opt/docker/provision/entrypoint.d/50-project.sh'
+      - './:/var/www/html'
+      - './.docker/scripts/50-project.sh:/opt/docker/provision/entrypoint.d/50-project.sh'
     ports:
       - '8080:80'
     environment:
