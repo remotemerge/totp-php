@@ -62,7 +62,7 @@ Designed with developers in mind, TOTP PHP is **easy to use**, well-documented, 
 
 ## **Get Started in Minutes**
 
-Adding TOTP PHP to your project is quick and easy. THe library requires PHP 8.1 or higher. Here's how to get started:
+Adding TOTP PHP to your project is quick and easy. THe library requires **PHP 8.1** or higher. Here's how to get started:
 
 ### **Installation**
 
