@@ -295,16 +295,16 @@ For a lightweight setup, use PHP's built-in server. This method is ideal for qui
 
 ## **Getting Help**
 
-Bugs and feature requests are tracked using GitHub issues, and I prioritize addressing them as soon as possible to ensure the library remains reliable and up-to-date.
+Bugs and feature requests are tracked using GitHub issues, and they are prioritized to ensure the library remains reliable and up-to-date.
 
 * **Found a Bug?**  
-  If you encounter any issues, please [open an issue](https://github.com/remotemerge/totp-php/issues/new) on GitHub. I'll work diligently to resolve it.
+  If you encounter any issues, please [open an issue](https://github.com/remotemerge/totp-php/issues/new) on GitHub. Every issue is addressed diligently to maintain the library's quality.
 
 * **Need Help with Integration?**  
-  If you need assistance integrating TOTP PHP into your application or have questions about its features, feel free to reach out. I'm passionate about helping developers build secure and efficient systems.
+  For assistance integrating TOTP PHP into your application or questions about its features, feel free to reach out. Helping developers build secure and efficient systems is a top priority.
 
 * **Interested in Collaboration?**  
-  If you're impressed with this library and are looking for a skilled PHP developer to join your team or collaborate on a project, I'd love to hear from you! Let's build something amazing together.
+  If this library impresses you, and you're looking for a skilled PHP developer to join your team or collaborate on a project, let's connect and build something amazing together.
 
 ---
 
