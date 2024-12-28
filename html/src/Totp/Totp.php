@@ -7,18 +7,18 @@ namespace RemoteMerge\Totp;
 use Exception;
 use RemoteMerge\Utils\Base32;
 
-final class Totp extends AbstractTotp
+final class Totp extends AbstractTotp implements TotpInterface
 {
     /**
      * Generates a secret key for TOTP.
      *
-     * @return string The generated secret key.
+     * @return string The generated secret key in Base32 format.
      * @throws TotpException If the secret key could not be generated.
      */
     public function generateSecret(): string
     {
         try {
-            return Base32::encodeUpper(random_bytes(20));
+            return Base32::encodeUpper(random_bytes(20)); // 20 bytes = 160 bits, standard for TOTP
         } catch (Exception $e) {
             throw new TotpException('Failed to generate secret key.', 0, $e);
         }
@@ -27,29 +27,31 @@ final class Totp extends AbstractTotp
     /**
      * Gets the TOTP code for the given secret.
      *
-     * @param string $secret The secret key.
+     * @param string $secret The secret key in Base32 format.
      * @param int|null $timeSlice The time slice to generate the code for. Defaults to the current time slice.
      * @return string The generated TOTP code.
      * @throws TotpException If the secret key is invalid.
      */
     public function getCode(string $secret, ?int $timeSlice = null): string
     {
+        $this->validateSecret($secret);
+
         $timeSlice = $timeSlice ?? $this->getCurrentTimeSlice();
         $decodedSecret = Base32::decodeUpper($secret);
         $time = $this->packTimeSlice($timeSlice);
 
-        $hash = hash_hmac(self::HASH_ALGORITHM, $time, $decodedSecret, true);
-        $offset = ord($hash[19]) & 0x0f;
+        $hash = hash_hmac($this->algorithm, $time, $decodedSecret, true);
+        $offset = ord($hash[strlen($hash) - 1]) & 0x0f;
 
         $code = $this->extractCodeFromHash($hash, $offset);
 
-        return str_pad((string)$code, self::CODE_LENGTH, '0', STR_PAD_LEFT);
+        return str_pad((string)$code, $this->digits, '0', STR_PAD_LEFT);
     }
 
     /**
      * Verifies the TOTP code for the given secret.
      *
-     * @param string $secret The secret key.
+     * @param string $secret The secret key in Base32 format.
      * @param string $code The code to verify.
      * @param int $discrepancy The allowed discrepancy in the code. Defaults to 1.
      * @param int|null $timeSlice The time slice to verify the code for. Defaults to the current time slice.
@@ -58,6 +60,9 @@ final class Totp extends AbstractTotp
      */
     public function verifyCode(string $secret, string $code, int $discrepancy = 1, ?int $timeSlice = null): bool
     {
+        $this->validateSecret($secret);
+        $this->validateCode($code);
+
         $currentSlice = $timeSlice ?? $this->getCurrentTimeSlice();
 
         for ($offset = -$discrepancy; $offset <= $discrepancy; ++$offset) {
@@ -67,5 +72,56 @@ final class Totp extends AbstractTotp
         }
 
         return false;
+    }
+
+    /**
+     * Generates a TOTP URI for QR code generation.
+     *
+     * @param string $secret The secret key in Base32 format.
+     * @param string $label The label for the account (e.g., user@example.com).
+     * @param string $issuer The issuer of the TOTP (e.g., the service name).
+     * @return string The TOTP URI in the format `otpauth://totp/{label}?secret={secret}&issuer={issuer}&algorithm={algorithm}&digits={digits}&period={period}`.
+     * @throws TotpException If the secret key is invalid.
+     */
+    public function generateUri(string $secret, string $label, string $issuer): string
+    {
+        $this->validateSecret($secret);
+
+        $strUri = 'otpauth://totp/%s?secret=%s&issuer=%s&algorithm=%s&digits=%d&period=%d';
+        $label = rawurlencode($label);
+        $issuer = rawurlencode($issuer);
+
+        return sprintf($strUri, $label, $secret, $issuer, $this->algorithm, $this->digits, $this->period);
+    }
+
+    /**
+     * Configures the TOTP parameters.
+     *
+     * @param array<string, mixed> $options An associative array of configuration options.
+     *        Supported options: 'algorithm' (string), 'digits' (int), 'period' (int).
+     * @throws TotpException If an unsupported algorithm is provided or if options are invalid.
+     */
+    public function configure(array $options): void
+    {
+        if (isset($options['algorithm'])) {
+            if (!in_array($options['algorithm'], self::SUPPORTED_ALGORITHMS, true)) {
+                throw new TotpException('Unsupported hash algorithm.');
+            }
+            $this->algorithm = $options['algorithm'];
+        }
+
+        if (isset($options['digits'])) {
+            if (!is_int($options['digits']) || $options['digits'] <= 0) {
+                throw new TotpException('Digits must be a positive integer.');
+            }
+            $this->digits = $options['digits'];
+        }
+
+        if (isset($options['period'])) {
+            if (!is_int($options['period']) || $options['period'] <= 0) {
+                throw new TotpException('Period must be a positive integer.');
+            }
+            $this->period = $options['period'];
+        }
     }
 }
