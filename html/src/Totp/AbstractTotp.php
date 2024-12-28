@@ -4,14 +4,56 @@ declare(strict_types=1);
 
 namespace RemoteMerge\Totp;
 
-abstract class AbstractTotp implements TotpInterface
+abstract class AbstractTotp
 {
+    /**
+     * The duration of a time slice in seconds.
+     */
     protected const TIME_SLICE_DURATION = 30;
+
+    /**
+     * The length of the TOTP code.
+     */
     protected const CODE_LENGTH = 6;
+
+    /**
+     * The hash algorithm to use for HMAC.
+     */
     protected const HASH_ALGORITHM = 'sha1';
 
     /**
-     * Gets the current time slice.
+     * The supported hash algorithms.
+     */
+    protected const SUPPORTED_ALGORITHMS = ['sha1', 'sha256', 'sha512'];
+
+    /**
+     * Validates the secret key.
+     *
+     * @param string $secret The secret key to validate.
+     * @throws TotpException If the secret key is invalid.
+     */
+    protected function validateSecret(string $secret): void
+    {
+        if (strlen($secret) % 8 !== 0) {
+            throw new TotpException('The secret key is invalid. Its length must be a multiple of 8.');
+        }
+    }
+
+    /**
+     * Validates the TOTP code.
+     *
+     * @param string $code The TOTP code to validate.
+     * @throws TotpException If the code is invalid.
+     */
+    protected function validateCode(string $code): void
+    {
+        if (strlen($code) !== self::CODE_LENGTH || !ctype_digit($code)) {
+            throw new TotpException(sprintf('The code must be a %d-digit number.', self::CODE_LENGTH));
+        }
+    }
+
+    /**
+     * Gets the current time slice based on the current time and the time slice duration.
      *
      * @return int The current time slice.
      */
@@ -23,8 +65,8 @@ abstract class AbstractTotp implements TotpInterface
     /**
      * Packs the time slice into a binary string.
      *
-     * @param int $timeSlice The time slice.
-     * @return string The packed binary string.
+     * @param int $timeSlice The time slice to pack.
+     * @return string The packed binary string (8 bytes, big-endian).
      */
     protected function packTimeSlice(int $timeSlice): string
     {
@@ -32,11 +74,11 @@ abstract class AbstractTotp implements TotpInterface
     }
 
     /**
-     * Extracts the TOTP code from the hash.
+     * Extracts the TOTP code from the HMAC hash.
      *
      * @param string $hash The HMAC hash.
-     * @param int $offset The offset to extract from.
-     * @return int The extracted code.
+     * @param int $offset The offset to start extracting the code from.
+     * @return int The extracted TOTP code.
      */
     protected function extractCodeFromHash(string $hash, int $offset): int
     {
