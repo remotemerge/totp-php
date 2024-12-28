@@ -248,7 +248,6 @@ $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . 
 echo "QR Code Image URL: $qrCodeUrl\n";
 ```
 
-
 ---
 
 ## **Try with Docker**
@@ -291,8 +290,6 @@ For a lightweight setup, use PHP's built-in server. This method is ideal for qui
    ```
 
 4. Access the application at `http://localhost:8080`.
-
----
 
 ---
 
