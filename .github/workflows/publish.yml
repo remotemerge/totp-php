@@ -1,0 +1,33 @@
+# The workflow to install the package on different OS and PHP versions
+name: Install
+
+# Trigger the workflow on new releases
+on:
+  release:
+    types: [ published ]
+    branches: [ main ]
+
+jobs:
+  install:
+    # Run on the latest OS versions
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # Define the OS and PHP versions to test
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        php: [ '8.1', '8.2', '8.3', '8.4' ]
+
+    steps:
+      - name: "Install PHP"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+
+      - name: "Display PHP and Composer version information"
+        run: php --version && composer --version
+
+      - name: "Initialize Composer"
+        run: composer init --no-interaction --stability=stable
+
+      - name: "Install dependencies"
+        run: composer require remotemerge/totp-php
