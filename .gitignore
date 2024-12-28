@@ -18,6 +18,12 @@
 /.vscode/*
 !/.vscode/*.json
 
+### Dev configs
+.php-cs-fixer.php
+app-cli.sh
+rector.php
+start-docker.sh
+
 ### Windows template
 *.lnk
 Thumbs.db
