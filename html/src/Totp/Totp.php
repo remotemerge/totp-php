@@ -30,6 +30,7 @@ final class Totp extends AbstractTotp
      * @param string $secret The secret key.
      * @param int|null $timeSlice The time slice to generate the code for. Defaults to the current time slice.
      * @return string The generated TOTP code.
+     * @throws TotpException If the secret key is invalid.
      */
     public function getCode(string $secret, ?int $timeSlice = null): string
     {
@@ -53,6 +54,7 @@ final class Totp extends AbstractTotp
      * @param int $discrepancy The allowed discrepancy in the code. Defaults to 1.
      * @param int|null $timeSlice The time slice to verify the code for. Defaults to the current time slice.
      * @return bool True if the code is valid, false otherwise.
+     * @throws TotpException If the secret key is invalid.
      */
     public function verifyCode(string $secret, string $code, int $discrepancy = 1, ?int $timeSlice = null): bool
     {
