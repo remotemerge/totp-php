@@ -7,6 +7,22 @@
 
 ![TOTP PHP Features](public/img/features.png)
 
+## **Table of Contents**
+
+| #  | Title                                   | Description                                                                 |
+|----|-----------------------------------------|-----------------------------------------------------------------------------|
+| 1  | [Why TOTP PHP?](#why-choose-totp-php)   | Ideal for secure logins, data protection, and enhanced user security.       |
+| 2  | [Key Features](#key-features)           | Secure secret generation, multi-algorithm support, QR codes, customization. |
+| 3  | [Get Started](#get-started-in-minutes)  | Quick installation via Composer and simple usage examples.                  |
+| 4  | [Basic Usage](#basic-usage)             | Generate secrets, TOTP codes, verify codes, and create QR code URIs.        |
+| 5  | [Customization](#customization-options) | Change hash algorithms, code length, and time slice duration.               |
+| 6  | [Advanced Usage](#advanced-usage)       | Verify codes with discrepancy and generate QR code images.                  |
+| 7  | [Try with Docker](#try-with-docker)     | Test locally using Docker for quick setup.                                  |
+| 8  | [Try without Docker](#try-with-php)     | Use PHP's built-in server for lightweight local testing.                    |
+| 9  | [Getting Help](#getting-help)           | Report bugs, get integration help, or collaborate on projects.              |
+| 10 | [Contribution](#contribution)           | Follow coding standards, test code, and submit pull requests.               |
+| 11 | [Screenshots](#screenshots)             | Visual demo of the library in action.                                       |
+
 ## **Why Choose TOTP PHP?**
 
 Looking for a versatile, secure, and reliable TOTP library for PHP that provides easy 2FA integration? TOTP PHP is your ultimate solution for seamless 2FA implementation. This developer friendly, lightweight, and secure library offers unmatched simplicity, performance, and customization, making it perfect for secure login systems, data protection, and enhanced user security. Whether you're safeguarding login systems, securing sensitive data, or enhancing user security, TOTP PHP ensures robust protection with exceptional ease of use and high performance, tailored for modern PHP developers.
@@ -267,9 +283,9 @@ Test the TOTP PHP library locally using Docker. This method automatically sets u
 
 ---
 
-## **Try without Docker (PHP Server)**
+## **Try with PHP**
 
-For a lightweight setup, use PHP's built-in server. This method is ideal for quick local testing and doesn’t require Docker. Follow these steps:
+For a lightweight setup, use PHP's built-in server. This method is ideal for quick local testing and doesn't require Docker. Follow these steps:
 
 1. Clone the repository:
    ```bash
@@ -311,11 +327,12 @@ Bugs and feature requests are tracked using GitHub issues, and they are prioriti
 The contributions of the **Open Source community** are highly valued and appreciated. To ensure a smooth and efficient process, please adhere to the following guidelines when submitting code:
 
 - **Coding Standards**: Ensure that the code adheres to [PER Coding Style 2.0](https://www.php-fig.org/per/coding-style/) standards.
-- **Testing**: All submitted code must pass relevant tests to maintain the library’s reliability.
+- **Testing**: All submitted code must pass relevant tests to maintain the library's reliability.
 - **Documentation**: Proper documentation and clean code practices are essential for maintainability.
 - **Pull Requests**: Please make pull requests to the `main` branch.
 
 Thank you for your support and contributions. Looking forward to reviewing your code and building something amazing together!
 
 ## **Screenshots**
+
 ![Screenshot 1](public/img/demo.png)
