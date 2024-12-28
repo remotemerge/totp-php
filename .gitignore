@@ -1,10 +1,10 @@
 ## Vendor directories
-/html/vendor/
+/vendor/
 
 ## Build directories
-/html/build/
-/html/bundle/
-/html/dist/
+/build/
+/bundle/
+/dist/
 
 ### JetBrains
 /.idea/*
