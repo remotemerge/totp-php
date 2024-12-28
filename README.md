@@ -248,6 +248,52 @@ $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . 
 echo "QR Code Image URL: $qrCodeUrl\n";
 ```
 
+
+---
+
+## **Try with Docker**
+
+Test the TOTP PHP library locally using Docker. This method automatically sets up the environment with all dependencies. Follow these steps:
+
+1. Clone the repository:
+   ```bash
+   git clone git@github.com:remotemerge/totp-php.git
+   cd totp-php
+   ```
+
+2. Start the Docker container:
+   ```bash
+   ddocker compose down && docker compose up
+   ```
+
+3. Access the application at `http://localhost:8080`.
+
+---
+
+## **Try without Docker (PHP Server)**
+
+For a lightweight setup, use PHP's built-in server. This method is ideal for quick local testing and doesn’t require Docker. Follow these steps:
+
+1. Clone the repository:
+   ```bash
+   git clone git@github.com:remotemerge/totp-php.git
+   cd totp-php
+   ```
+
+2. Install dependencies using Composer:
+   ```bash
+   composer install
+   ```
+
+3. Start the PHP built-in server:
+   ```bash
+   php -S localhost:8080 -t public
+   ```
+
+4. Access the application at `http://localhost:8080`.
+
+---
+
 ---
 
 ## **Why TOTP PHP?**
