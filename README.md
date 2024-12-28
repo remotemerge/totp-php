@@ -293,18 +293,18 @@ For a lightweight setup, use PHP's built-in server. This method is ideal for qui
 
 ---
 
-## **Why TOTP PHP?**
+## **Getting Help**
 
-- **Secure by Design**: Built with security as the top priority, ensuring your users' data is always protected.
-- **Easy to Integrate**: Simple API and clear documentation make integration effortless.
-- **Flexible and Customizable**: Tailor TOTP PHP to fit your application's unique needs.
-- **Trusted by Developers**: Used by developers worldwide to add secure 2FA to their applications.
+Bugs and feature requests are tracked using GitHub issues, and I prioritize addressing them as soon as possible to ensure the library remains reliable and up-to-date.
 
----
+* **Found a Bug?**  
+  If you encounter any issues, please [open an issue](https://github.com/remotemerge/totp-php/issues/new) on GitHub. I'll work diligently to resolve it.
 
-## **Support and Contributions**
+* **Need Help with Integration?**  
+  If you need assistance integrating TOTP PHP into your application or have questions about its features, feel free to reach out. I'm passionate about helping developers build secure and efficient systems.
 
-Have questions or need help? Open an issue on [GitHub](https://github.com/remotemerge/totp-php/issues). Contributions are welcome!
+* **Interested in Collaboration?**  
+  If you're impressed with this library and are looking for a skilled PHP developer to join your team or collaborate on a project, I'd love to hear from you! Let's build something amazing together.
 
 ---
 
