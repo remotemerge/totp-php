@@ -1,5 +1,12 @@
 # **TOTP PHP: The Ultimate 2FA Library for PHP**
 
+[![X (formerly Twitter)](https://img.shields.io/badge/-@sapkotamadan-white?style=flat&logo=x&label=(formerly%20Twitter))](https://twitter.com/sapkotamadan)
+[![Facebook](https://img.shields.io/badge/Facebook-NextSapkotaMadan-blue?style=flat&logo=facebook)](https://www.facebook.com/NextSapkotaMadan)
+![PHP Version](https://img.shields.io/packagist/php-v/remotemerge/totp-php)
+![Build](https://img.shields.io/github/actions/workflow/status/remotemerge/totp-php/install.yml?style=flat&logo=github)
+[![Downloads](https://img.shields.io/packagist/dt/remotemerge/totp-php.svg?style=flat&label=Downloads)](https://packagist.org/packages/remotemerge/totp-php)
+![License](https://img.shields.io/github/license/remotemerge/totp-php)
+
 **A developer friendly, lightweight, and secure TOTP solution for adding 2FA to PHP applications. TOTP PHP offers unmatched simplicity, performance, and customization, making it perfect for secure login systems, data protection, and enhanced user security.**
 
 ---
@@ -256,7 +263,7 @@ echo "QR Code Image URL: $qrCodeUrl\n";
 
 ## **Support and Contributions**
 
-Have questions or need help? Open an issue on [GitHub Issues](https://github.com/remotemerge/totp-php/issues). Contributions are welcome!
+Have questions or need help? Open an issue on [GitHub](https://github.com/remotemerge/totp-php/issues). Contributions are welcome!
 
 ---
 
