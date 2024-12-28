@@ -4,7 +4,7 @@ let secretKey = '';
 // Enable 2FA Button
 document.getElementById('enable2FA').addEventListener('click', async () => {
   // Fetch the secret key and QR code URI from the backend
-  const response = await fetch('/generate-secret');
+  const response = await fetch('/secret.php');
   const data = await response.json();
   secretKey = data.secret;
 
@@ -19,7 +19,7 @@ document.getElementById('enable2FA').addEventListener('click', async () => {
 // Verify TOTP Code
 document.getElementById('verifyCode').addEventListener('click', async () => {
   const code = document.getElementById('verifyCodeInput').value;
-  const response = await fetch('/verify-code', {
+  const response = await fetch('/verify.php', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({secret: secretKey, code}),
