@@ -16,6 +16,21 @@ interface TotpInterface
     public function configure(array $options): void;
 
     /**
+     * Gets the hash algorithm to use for HMAC.
+     */
+    public function getAlgorithm(): string;
+
+    /**
+     * Gets the length of the TOTP code.
+     */
+    public function getDigits(): int;
+
+    /**
+     * Gets the duration of a time slice in seconds.
+     */
+    public function getPeriod(): int;
+
+    /**
      * Generates a new secret key for TOTP.
      *
      * @return string The generated secret key, typically in Base32 format.

@@ -41,6 +41,36 @@ final class Totp extends AbstractTotp implements TotpInterface
     }
 
     /**
+     * Gets the hash algorithm to use for HMAC.
+     *
+     * @return string The hash algorithm.
+     */
+    public function getAlgorithm(): string
+    {
+        return $this->algorithm;
+    }
+
+    /**
+     * Gets the length of the TOTP code.
+     *
+     * @return int The length of the TOTP code.
+     */
+    public function getDigits(): int
+    {
+        return $this->digits;
+    }
+
+    /**
+     * Gets the duration of a time slice in seconds.
+     *
+     * @return int The duration of a time slice.
+     */
+    public function getPeriod(): int
+    {
+        return $this->period;
+    }
+
+    /**
      * Generates a secret key for TOTP.
      *
      * @return string The generated secret key in Base32 format.
