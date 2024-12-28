@@ -7,13 +7,13 @@
 [![Downloads](https://img.shields.io/packagist/dt/remotemerge/totp-php.svg?style=flat&label=Downloads)](https://packagist.org/packages/remotemerge/totp-php)
 ![License](https://img.shields.io/github/license/remotemerge/totp-php)
 
-**A developer friendly, lightweight, and secure TOTP solution for adding 2FA to PHP applications. TOTP PHP offers unmatched simplicity, performance, and customization, making it perfect for secure login systems, data protection, and enhanced user security.**
+![TOTP PHP Features](public/img/features.png)
 
 ---
 
 ## **Why Choose TOTP PHP?**
 
-Looking for a versatile, secure, and reliable TOTP library for PHP that provides easy 2FA integration? TOTP PHP stands out as your ultimate solution for seamless 2FA integration. Whether safeguarding login systems, securing sensitive data, or enhancing user security, TOTP PHP ensures robust protection with exceptional ease of use and high performance tailored for modern PHP developers.
+Looking for a versatile, secure, and reliable TOTP library for PHP that provides easy 2FA integration? TOTP PHP is your ultimate solution for seamless 2FA implementation. This developer friendly, lightweight, and secure library offers unmatched simplicity, performance, and customization, making it perfect for secure login systems, data protection, and enhanced user security. Whether you're safeguarding login systems, securing sensitive data, or enhancing user security, TOTP PHP ensures robust protection with exceptional ease of use and high performance, tailored for modern PHP developers.
 
 ---
 
