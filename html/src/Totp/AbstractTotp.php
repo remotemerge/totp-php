@@ -7,19 +7,19 @@ namespace RemoteMerge\Totp;
 abstract class AbstractTotp
 {
     /**
-     * The duration of a time slice in seconds.
+     * The hash algorithm to use for HMAC.
      */
-    protected const TIME_SLICE_DURATION = 30;
+    protected string $algorithm = 'sha1';
 
     /**
      * The length of the TOTP code.
      */
-    protected const CODE_LENGTH = 6;
+    protected int $digits = 6;
 
     /**
-     * The hash algorithm to use for HMAC.
+     * The duration of a time slice in seconds.
      */
-    protected const HASH_ALGORITHM = 'sha1';
+    protected int $period = 30;
 
     /**
      * The supported hash algorithms.
@@ -47,8 +47,8 @@ abstract class AbstractTotp
      */
     protected function validateCode(string $code): void
     {
-        if (strlen($code) !== self::CODE_LENGTH || !ctype_digit($code)) {
-            throw new TotpException(sprintf('The code must be a %d-digit number.', self::CODE_LENGTH));
+        if (strlen($code) !== $this->digits || !ctype_digit($code)) {
+            throw new TotpException(sprintf('The code must be a %d-digit number.', $this->digits));
         }
     }
 
@@ -59,7 +59,7 @@ abstract class AbstractTotp
      */
     protected function getCurrentTimeSlice(): int
     {
-        return (int)floor(time() / self::TIME_SLICE_DURATION);
+        return (int)floor(time() / $this->period);
     }
 
     /**
@@ -88,6 +88,6 @@ abstract class AbstractTotp
         $hash3 = ord($hash[$offset + 2]) & 0xff;
         $hash4 = ord($hash[$offset + 3]) & 0xff;
 
-        return (($hash1 << 24) | ($hash2 << 16) | ($hash3 << 8) | $hash4) % (10 ** self::CODE_LENGTH);
+        return (($hash1 << 24) | ($hash2 << 16) | ($hash3 << 8) | $hash4) % (10 ** $this->digits);
     }
 }
