@@ -1,6 +1,5 @@
 {
   "name": "remotemerge/totp-php",
-  "version": "1.0.0",
   "type": "library",
   "description": "Simple, Fast & Secure TOTP (aka 2FA) Auth library for PHP.",
   "homepage": "https://github.com/remotemerge/totp-php",
@@ -16,6 +15,7 @@
     "2fa",
     "auth",
     "authentication",
+    "hmac",
     "otp",
     "security",
     "totp",
