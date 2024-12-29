@@ -76,16 +76,12 @@ final class Totp extends AbstractTotp implements TotpInterface
     /**
      * Generates a secret key for TOTP.
      *
-     * @throws TotpException If the secret key could not be generated.
+     * @throws Exception If an error occurs generating the secret key.
      * @return string The generated secret key in Base32 format.
      */
     public function generateSecret(): string
     {
-        try {
-            return Base32::encodeUpper(random_bytes(20)); // 20 bytes = 160 bits, standard for TOTP
-        } catch (Exception $exception) {
-            throw new TotpException('Failed to generate secret key.', 0, $exception);
-        }
+        return Base32::encodeUpper(random_bytes(20));
     }
 
     /**

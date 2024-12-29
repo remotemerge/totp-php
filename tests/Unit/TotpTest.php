@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use Exception;
 use PHPUnit\Framework\TestCase;
 use RemoteMerge\Totp\Totp;
 use RemoteMerge\Totp\TotpException;
@@ -43,7 +44,7 @@ final class TotpTest extends TestCase
     /**
      * Test generating a secret key.
      * @covers \RemoteMerge\Totp\Totp::generateSecret
-     * @throws TotpException
+     * @throws Exception
      */
     public function test_generate_secret(): void
     {
