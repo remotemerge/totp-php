@@ -44,7 +44,7 @@ jobs:
         run: ./vendor/bin/phpunit
 
       - name: "Upload test results to Codecov"
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && matrix.os == 'ubuntu-latest' && matrix.php == '8.4' }}
         uses: codecov/test-results-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
