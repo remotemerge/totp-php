@@ -156,4 +156,16 @@ final class TotpTest extends TestCase
         $totp = new Totp();
         $totp->configure(['digits' => 7]);
     }
+
+    /**
+     * Test configuring TOTP with an invalid period.
+     * @covers \RemoteMerge\Totp\Totp::configure
+     */
+    public function test_configure_invalid_period(): void
+    {
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('Period must be a positive integer.');
+        $totp = new Totp();
+        $totp->configure(['period' => -1]);
+    }
 }
