@@ -20,6 +20,9 @@ jobs:
       - name: "Checkout code"
         uses: actions/checkout@v3
 
+      - name: "Set Xdebug coverage"
+        run: echo "XDEBUG_MODE=coverage" >> $GITHUB_ENV
+
       - name: "Setup PHP"
         uses: shivammathur/setup-php@v2
         with:
@@ -34,4 +37,4 @@ jobs:
         run: composer install --no-interaction --prefer-dist
 
       - name: "Run PHPUnit tests"
-        run: XDEBUG_MODE=coverage ./vendor/bin/phpunit
+        run: ./vendor/bin/phpunit
