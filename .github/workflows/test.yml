@@ -1,0 +1,36 @@
+# The workflow to test the codebase on pull requests
+name: Test
+
+# Trigger workflow on pull requests
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    # Define the matrix for OS and PHP versions
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        php: [ '8.1', '8.2', '8.3', '8.4' ]
+
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v3
+
+      - name: "Setup PHP"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+
+      - name: "Display PHP and Composer version information"
+        run: php --version && composer --version
+
+      - name: "Install dependencies"
+        run: composer install --no-interaction --prefer-dist
+
+      - name: "Run PHPUnit tests"
+        run: ./vendor/bin/phpunit
