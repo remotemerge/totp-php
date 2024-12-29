@@ -144,4 +144,16 @@ final class TotpTest extends TestCase
         $totp = new Totp();
         $totp->configure(['algorithm' => 'md5']);
     }
+
+    /**
+     * Test configuring TOTP with an invalid number of digits.
+     * @covers \RemoteMerge\Totp\Totp::configure
+     */
+    public function test_configure_invalid_digits(): void
+    {
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('Digits must be either 6 or 8.');
+        $totp = new Totp();
+        $totp->configure(['digits' => 7]);
+    }
 }
