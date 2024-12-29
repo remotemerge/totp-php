@@ -27,8 +27,8 @@ final class Totp extends AbstractTotp implements TotpInterface
         }
 
         if (isset($options['digits'])) {
-            if (!is_int($options['digits']) || $options['digits'] <= 0) {
-                throw new TotpException('Digits must be a positive integer.');
+            if (!in_array($options['digits'], [6, 8], true)) {
+                throw new TotpException('Digits must be either 6 or 8.');
             }
 
             $this->digits = $options['digits'];
