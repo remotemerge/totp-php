@@ -1,7 +1,7 @@
 {
   "name": "remotemerge/totp-php",
   "type": "library",
-  "description": "Simple, Fast & Secure TOTP (aka 2FA) Auth library for PHP.",
+  "description": "Lightweight, fast, and secure TOTP (2FA) authentication library for PHP — battle tested, dependency free, and ready for seamless enterprise integration.",
   "homepage": "https://github.com/remotemerge/totp-php",
   "license": "MIT",
   "authors": [
