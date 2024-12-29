@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
@@ -104,7 +106,7 @@ class AbstractTotpTest extends TestCase
 
         $timeSlice = $method->invoke($this->totp);
         $this->assertIsInt($timeSlice);
-        $this->assertEquals((int)floor(time() / 30), $timeSlice);
+        $this->assertEquals((int) floor(time() / 30), $timeSlice);
     }
 
     /**
