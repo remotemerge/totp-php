@@ -13,13 +13,22 @@
   ],
   "keywords": [
     "2fa",
+    "api-security",
     "auth",
     "authentication",
     "hmac",
+    "multi-factor-authentication",
+    "one-time-password",
     "otp",
+    "php-2fa",
+    "php-security",
+    "secure-authentication",
     "security",
+    "time-based-otp",
     "totp",
-    "two-factor"
+    "two-factor",
+    "two-factor-authentication",
+    "web-security"
   ],
   "require": {
     "php": "^8.1"
