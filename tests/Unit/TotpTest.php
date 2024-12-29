@@ -11,6 +11,36 @@ use RemoteMerge\Totp\TotpException;
 final class TotpTest extends TestCase
 {
     /**
+     * Test getting the hash algorithm.
+     * @covers \RemoteMerge\Totp\Totp::getAlgorithm
+     */
+    public function test_get_algorithm(): void
+    {
+        $totp = new Totp();
+        $this->assertSame('sha1', $totp->getAlgorithm());
+    }
+
+    /**
+     * Test getting the number of digits in the TOTP code.
+     * @covers \RemoteMerge\Totp\Totp::getDigits
+     */
+    public function test_get_digits(): void
+    {
+        $totp = new Totp();
+        $this->assertSame(6, $totp->getDigits());
+    }
+
+    /**
+     * Test getting the time slice duration.
+     * @covers \RemoteMerge\Totp\Totp::getPeriod
+     */
+    public function test_get_period(): void
+    {
+        $totp = new Totp();
+        $this->assertSame(30, $totp->getPeriod());
+    }
+
+    /**
      * Test generating a secret key.
      * @covers \RemoteMerge\Totp\Totp::generateSecret
      * @throws TotpException
@@ -70,7 +100,7 @@ final class TotpTest extends TestCase
     {
         $totp = new Totp();
         $secret = 'JBSWY3DPEHPK3PXP';
-        $code = $totp->getCode($secret, (int) (time() / 30 - 1)); // Previous time slice
+        $code = $totp->getCode($secret, (int)(time() / 30 - 1)); // Previous time slice
         $this->assertTrue($totp->verifyCode($secret, $code, 1));
     }
 
