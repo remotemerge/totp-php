@@ -23,6 +23,7 @@
 .php-cs-fixer.php
 app-cli.sh
 coverage.xml
+junit.xml
 rector.php
 start-docker.sh
 
