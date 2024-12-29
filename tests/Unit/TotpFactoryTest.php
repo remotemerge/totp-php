@@ -13,6 +13,7 @@ final class TotpFactoryTest extends TestCase
 {
     /**
      * Test creating a default TOTP instance.
+     * @covers \RemoteMerge\Totp\TotpFactory::create
      * @throws TotpException
      */
     public function test_create_default(): void
@@ -23,6 +24,7 @@ final class TotpFactoryTest extends TestCase
 
     /**
      * Test creating a configured TOTP instance.
+     * @covers \RemoteMerge\Totp\TotpFactory::create
      * @throws TotpException
      */
     public function test_create_configured(): void

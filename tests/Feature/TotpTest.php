@@ -12,6 +12,7 @@ final class TotpTest extends TestCase
 {
     /**
      * Test the entire TOTP workflow.
+     * @covers \RemoteMerge\Totp\TotpFactory
      * @throws TotpException
      */
     public function test_totp_workflow(): void

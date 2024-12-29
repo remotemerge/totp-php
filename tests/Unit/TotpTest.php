@@ -12,6 +12,7 @@ final class TotpTest extends TestCase
 {
     /**
      * Test generating a secret key.
+     * @covers \RemoteMerge\Totp\Totp::generateSecret
      * @throws TotpException
      */
     public function test_generate_secret(): void
@@ -24,6 +25,7 @@ final class TotpTest extends TestCase
 
     /**
      * Test generating a TOTP code.
+     * @covers \RemoteMerge\Totp\Totp::getCode
      * @throws TotpException
      */
     public function test_generate_code(): void
@@ -36,6 +38,7 @@ final class TotpTest extends TestCase
 
     /**
      * Test verifying a valid TOTP code.
+     * @covers \RemoteMerge\Totp\Totp::verifyCode
      * @throws TotpException
      */
     public function test_verify_valid_code(): void
@@ -48,6 +51,7 @@ final class TotpTest extends TestCase
 
     /**
      * Test verifying an invalid TOTP code.
+     * @covers \RemoteMerge\Totp\Totp::verifyCode
      * @throws TotpException
      */
     public function test_verify_invalid_code(): void
@@ -59,6 +63,7 @@ final class TotpTest extends TestCase
 
     /**
      * Test verifying a TOTP code with discrepancy.
+     * @covers \RemoteMerge\Totp\Totp::verifyCode
      * @throws TotpException
      */
     public function test_verify_code_with_discrepancy(): void
@@ -71,6 +76,7 @@ final class TotpTest extends TestCase
 
     /**
      * Test generating a TOTP URI.
+     * @covers \RemoteMerge\Totp\Totp::generateUri
      * @throws TotpException
      */
     public function test_generate_uri(): void
@@ -85,6 +91,7 @@ final class TotpTest extends TestCase
 
     /**
      * Test configuring TOTP parameters.
+     * @covers \RemoteMerge\Totp\Totp::configure
      * @throws TotpException
      */
     public function test_configure_parameters(): void
@@ -98,6 +105,7 @@ final class TotpTest extends TestCase
 
     /**
      * Test configuring TOTP with an invalid algorithm.
+     * @covers \RemoteMerge\Totp\Totp::configure
      */
     public function test_configure_invalid_algorithm(): void
     {
