@@ -43,6 +43,13 @@ jobs:
       - name: "Run PHPUnit tests"
         run: ./vendor/bin/phpunit
 
+      - name: "Upload coverage to Codecov"
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          env_vars: OS,PHP
+          files: ./coverage.xml
+
       - name: "Upload test results to Codecov"
         if: ${{ !cancelled() && matrix.os == 'ubuntu-latest' && matrix.php == '8.4' }}
         uses: codecov/test-results-action@v1
