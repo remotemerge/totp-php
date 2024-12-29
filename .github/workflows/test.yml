@@ -24,7 +24,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          coverage: none
+          extensions: xdebug
+          coverage: xdebug
 
       - name: "Display PHP and Composer version information"
         run: php --version && composer --version
@@ -33,4 +34,4 @@ jobs:
         run: composer install --no-interaction --prefer-dist
 
       - name: "Run PHPUnit tests"
-        run: ./vendor/bin/phpunit
+        run: XDEBUG_MODE=coverage ./vendor/bin/phpunit
