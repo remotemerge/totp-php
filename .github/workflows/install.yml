@@ -1,8 +1,7 @@
-# The workflow to install the package on different OS and PHP versions
 name: Install
 
-# Trigger the workflow on new releases
 on:
+  # Run the workflow on new releases
   release:
     types: [ published ]
     branches: [ main ]
