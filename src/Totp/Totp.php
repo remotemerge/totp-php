@@ -27,8 +27,8 @@ final class Totp extends AbstractTotp implements TotpInterface
         }
 
         if (isset($options['digits'])) {
-            if (!is_int($options['digits']) || $options['digits'] <= 0) {
-                throw new TotpException('Digits must be a positive integer.');
+            if (!in_array($options['digits'], [6, 8], true)) {
+                throw new TotpException('Digits must be either 6 or 8.');
             }
 
             $this->digits = $options['digits'];
@@ -76,16 +76,12 @@ final class Totp extends AbstractTotp implements TotpInterface
     /**
      * Generates a secret key for TOTP.
      *
-     * @throws TotpException If the secret key could not be generated.
+     * @throws Exception If an error occurs generating the secret key.
      * @return string The generated secret key in Base32 format.
      */
     public function generateSecret(): string
     {
-        try {
-            return Base32::encodeUpper(random_bytes(20)); // 20 bytes = 160 bits, standard for TOTP
-        } catch (Exception $exception) {
-            throw new TotpException('Failed to generate secret key.', 0, $exception);
-        }
+        return Base32::encodeUpper(random_bytes(20));
     }
 
     /**

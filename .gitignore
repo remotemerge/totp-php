@@ -4,6 +4,7 @@
 ## Build directories
 /build/
 /bundle/
+/coverage/
 /dist/
 
 ### JetBrains
@@ -21,6 +22,8 @@
 ### Dev configs
 .php-cs-fixer.php
 app-cli.sh
+coverage.xml
+junit.xml
 rector.php
 start-docker.sh
 
