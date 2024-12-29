@@ -2,6 +2,8 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="./vendor/autoload.php"
+         beStrictAboutOutputDuringTests="true"
+         requireCoverageMetadata="true"
          colors="true">
   <testsuites>
     <testsuite name="feature">
@@ -9,4 +11,14 @@
       <directory>tests/Unit</directory>
     </testsuite>
   </testsuites>
+  <source>
+    <include>
+      <directory>src</directory>
+    </include>
+  </source>
+  <coverage>
+    <report>
+      <clover outputFile="coverage.xml"/>
+    </report>
+  </coverage>
 </phpunit>
