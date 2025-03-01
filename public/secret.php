@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 // Init autoloader
-require dirname(__DIR__) . '/vendor/autoload.php';
+require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 use RemoteMerge\Totp\TotpException;
 use RemoteMerge\Totp\TotpFactory;
