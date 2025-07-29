@@ -20,12 +20,8 @@
 !/.vscode/*.json
 
 ### Dev configs
-.php-cs-fixer.php
-app-cli.sh
 coverage.xml
 junit.xml
-rector.php
-start-docker.sh
 
 ### Windows template
 *.lnk
