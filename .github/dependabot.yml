@@ -33,7 +33,7 @@ updates:
 
   - package-ecosystem: "composer"
     target-branch: "main"
-    directory: "/html"
+    directory: "/"
     schedule:
       interval: "daily"
     ignore:
