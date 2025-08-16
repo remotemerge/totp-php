@@ -33,11 +33,6 @@ return $config->setRules([
     'array_syntax' => ['syntax' => 'short'],
     'modernize_types_casting' => true,
     'ternary_to_null_coalescing' => true,
-    'trailing_comma_in_multiline' => [
-        'arrays' => true,
-        'arguments' => true,
-        'parameters' => true,
-    ],
     'use_arrow_functions' => true,
 
     // Code Quality & Formatting
