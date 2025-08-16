@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Exception;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use RemoteMerge\Totp\Totp;
 use RemoteMerge\Totp\TotpException;
 
+#[CoversClass(Totp::class)]
 final class TotpTest extends TestCase
 {
     /**
      * Test getting the hash algorithm.
-     * @covers \RemoteMerge\Totp\Totp::getAlgorithm
      */
     public function test_get_algorithm(): void
     {
@@ -23,7 +24,6 @@ final class TotpTest extends TestCase
 
     /**
      * Test getting the number of digits in the TOTP code.
-     * @covers \RemoteMerge\Totp\Totp::getDigits
      */
     public function test_get_digits(): void
     {
@@ -33,7 +33,6 @@ final class TotpTest extends TestCase
 
     /**
      * Test getting the time slice duration.
-     * @covers \RemoteMerge\Totp\Totp::getPeriod
      */
     public function test_get_period(): void
     {
@@ -43,7 +42,6 @@ final class TotpTest extends TestCase
 
     /**
      * Test generating a secret key.
-     * @covers \RemoteMerge\Totp\Totp::generateSecret
      * @throws Exception
      */
     public function test_generate_secret(): void
@@ -56,7 +54,6 @@ final class TotpTest extends TestCase
 
     /**
      * Test generating a TOTP code.
-     * @covers \RemoteMerge\Totp\Totp::getCode
      * @throws TotpException
      */
     public function test_generate_code(): void
@@ -69,7 +66,6 @@ final class TotpTest extends TestCase
 
     /**
      * Test verifying a valid TOTP code.
-     * @covers \RemoteMerge\Totp\Totp::verifyCode
      * @throws TotpException
      */
     public function test_verify_valid_code(): void
@@ -82,7 +78,6 @@ final class TotpTest extends TestCase
 
     /**
      * Test verifying an invalid TOTP code.
-     * @covers \RemoteMerge\Totp\Totp::verifyCode
      * @throws TotpException
      */
     public function test_verify_invalid_code(): void
@@ -94,7 +89,6 @@ final class TotpTest extends TestCase
 
     /**
      * Test verifying a TOTP code with discrepancy.
-     * @covers \RemoteMerge\Totp\Totp::verifyCode
      * @throws TotpException
      */
     public function test_verify_code_with_discrepancy(): void
@@ -107,7 +101,6 @@ final class TotpTest extends TestCase
 
     /**
      * Test generating a TOTP URI.
-     * @covers \RemoteMerge\Totp\Totp::generateUri
      * @throws TotpException
      */
     public function test_generate_uri(): void
@@ -122,7 +115,6 @@ final class TotpTest extends TestCase
 
     /**
      * Test configuring TOTP parameters.
-     * @covers \RemoteMerge\Totp\Totp::configure
      * @throws TotpException
      */
     public function test_configure_parameters(): void
@@ -136,7 +128,6 @@ final class TotpTest extends TestCase
 
     /**
      * Test configuring TOTP with an invalid algorithm.
-     * @covers \RemoteMerge\Totp\Totp::configure
      */
     public function test_configure_invalid_algorithm(): void
     {
@@ -148,7 +139,6 @@ final class TotpTest extends TestCase
 
     /**
      * Test configuring TOTP with an invalid number of digits.
-     * @covers \RemoteMerge\Totp\Totp::configure
      */
     public function test_configure_invalid_digits(): void
     {
@@ -160,7 +150,6 @@ final class TotpTest extends TestCase
 
     /**
      * Test configuring TOTP with an invalid period.
-     * @covers \RemoteMerge\Totp\Totp::configure
      */
     public function test_configure_invalid_period(): void
     {
