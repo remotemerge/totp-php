@@ -24,17 +24,19 @@ final class Base32
         'Y' => 24, 'Z' => 25, '2' => 26, '3' => 27, '4' => 28, '5' => 29, '6' => 30, '7' => 31,
     ];
 
-    /**
-     * Bit masks for encoding/decoding operations
-     */
+    /** Mask to extract 8 bits (1 byte) from buffer */
     private const BYTE_MASK = 0xFF;
 
+    /** Mask to extract 5 bits for Base32 character mapping */
     private const BASE32_MASK = 0x1F;
 
+    /** Number of bits in a standard byte */
     private const BITS_PER_BYTE = 8;
 
+    /** Number of bits represented by each Base32 character */
     private const BITS_PER_BASE32 = 5;
 
+    /** Standard Base32 block size for padding calculations */
     private const BASE32_BLOCK_SIZE = 8;
 
     /**
