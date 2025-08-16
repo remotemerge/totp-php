@@ -25,6 +25,19 @@ final class Base32
     ];
 
     /**
+     * Bit masks for encoding/decoding operations
+     */
+    private const BYTE_MASK = 0xFF;
+
+    private const BASE32_MASK = 0x1F;
+
+    private const BITS_PER_BYTE = 8;
+
+    private const BITS_PER_BASE32 = 5;
+
+    private const BASE32_BLOCK_SIZE = 8;
+
+    /**
      * Encodes binary data to Base32 using optimized bit manipulation.
      *
      * @param string $data The binary data to encode.
@@ -43,23 +56,23 @@ final class Base32
 
         // Process input byte by byte using bit manipulation
         for ($i = 0; $i < $length; $i++) {
-            $buffer = ($buffer << 8) | ord($data[$i]);
-            $bufferLength += 8;
+            $buffer = ($buffer << self::BITS_PER_BYTE) | ord($data[$i]);
+            $bufferLength += self::BITS_PER_BYTE;
 
             // Extract 5-bit chunks and encode them
-            while ($bufferLength >= 5) {
-                $bufferLength -= 5;
-                $output .= self::ENCODE_MAP[($buffer >> $bufferLength) & 0x1F];
+            while ($bufferLength >= self::BITS_PER_BASE32) {
+                $bufferLength -= self::BITS_PER_BASE32;
+                $output .= self::ENCODE_MAP[($buffer >> $bufferLength) & self::BASE32_MASK];
             }
         }
 
         // Handle remaining bits if any
         if ($bufferLength > 0) {
-            $output .= self::ENCODE_MAP[($buffer << (5 - $bufferLength)) & 0x1F];
+            $output .= self::ENCODE_MAP[($buffer << (self::BITS_PER_BASE32 - $bufferLength)) & self::BASE32_MASK];
         }
 
         // Add RFC 4648 compliant padding
-        $padLength = (8 - (strlen($output) % 8)) % 8;
+        $padLength = (self::BASE32_BLOCK_SIZE - (strlen($output) % self::BASE32_BLOCK_SIZE)) % self::BASE32_BLOCK_SIZE;
         if ($padLength > 0) {
             $output .= str_repeat('=', $padLength);
         }
@@ -96,13 +109,13 @@ final class Base32
                 throw new TotpException(MessageStore::get('encoding.invalid_base32_char', $char));
             }
 
-            $buffer = ($buffer << 5) | self::DECODE_MAP[$char];
-            $bufferLength += 5;
+            $buffer = ($buffer << self::BITS_PER_BASE32) | self::DECODE_MAP[$char];
+            $bufferLength += self::BITS_PER_BASE32;
 
             // Extract complete bytes
-            if ($bufferLength >= 8) {
-                $bufferLength -= 8;
-                $output .= chr(($buffer >> $bufferLength) & 0xFF);
+            if ($bufferLength >= self::BITS_PER_BYTE) {
+                $bufferLength -= self::BITS_PER_BYTE;
+                $output .= chr(($buffer >> $bufferLength) & self::BYTE_MASK);
             }
         }
 
