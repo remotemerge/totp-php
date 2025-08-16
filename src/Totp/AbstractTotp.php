@@ -47,7 +47,7 @@ abstract class AbstractTotp
      */
     protected function validateCode(string $code): void
     {
-        if (strlen($code) !== $this->digits || !ctype_digit($code)) {
+        if (preg_match('/^\d{' . $this->digits . '}$/', $code) !== 1) {
             throw new TotpException(sprintf('The code must be a %d-digit number.', $this->digits));
         }
     }
