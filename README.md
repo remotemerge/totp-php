@@ -1,12 +1,12 @@
 # **TOTP PHP: The Ultimate 2FA Library for PHP**
 
-![PHP Version](https://img.shields.io/packagist/php-v/remotemerge/totp-php?logo=php&style=flat)
-![Tests](https://img.shields.io/github/actions/workflow/status/remotemerge/totp-php/test.yml?style=flat&logo=counterstrike&label=test)
-![Coverage](https://img.shields.io/codecov/c/github/remotemerge/totp-php?style=flat&logo=codecov)
-![Build](https://img.shields.io/github/actions/workflow/status/remotemerge/totp-php/install.yml?style=flat&logo=github)
-![Version](https://img.shields.io/packagist/v/remotemerge/totp-php?style=flat&label=version)
+[![PHP Version](https://img.shields.io/packagist/php-v/remotemerge/totp-php?logo=php&style=flat)](https://github.com/remotemerge/totp-php)
+[![Tests](https://img.shields.io/github/actions/workflow/status/remotemerge/totp-php/test.yml?style=flat&logo=counterstrike&label=test)](https://github.com/remotemerge/totp-php)
+[![Coverage](https://img.shields.io/codecov/c/github/remotemerge/totp-php?style=flat&logo=codecov)](https://app.codecov.io/gh/remotemerge/totp-php)
+[![Build](https://img.shields.io/github/actions/workflow/status/remotemerge/totp-php/install.yml?style=flat&logo=github)](https://github.com/remotemerge/totp-php)
+[![Version](https://img.shields.io/packagist/v/remotemerge/totp-php?style=flat&label=version)](https://github.com/remotemerge/totp-php)
 [![Downloads](https://img.shields.io/packagist/dt/remotemerge/totp-php.svg?style=flat&label=downloads)](https://packagist.org/packages/remotemerge/totp-php)
-![License](https://img.shields.io/github/license/remotemerge/totp-php)
+[![License](https://img.shields.io/github/license/remotemerge/totp-php)](https://github.com/remotemerge/totp-php?tab=MIT-1-ov-file)
 
 ![TOTP PHP Features](public/img/features.png)
 
