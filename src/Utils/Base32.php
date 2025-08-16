@@ -10,17 +10,22 @@ use RemoteMerge\Translation\MessageStore;
 final class Base32
 {
     /**
-     * The characters used in Base32 encoding.
+     * Base32 character set (RFC 4648)
      */
-    private const CHARACTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+    private const ENCODE_MAP = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
 
     /**
-     * The padding character used in Base32 encoding.
+     * Pre-computed decode lookup table for O(1) character mapping.
      */
-    private const PADDING_CHAR = '=';
+    private const DECODE_MAP = [
+        'A' => 0,  'B' => 1,  'C' => 2,  'D' => 3,  'E' => 4,  'F' => 5,  'G' => 6,  'H' => 7,
+        'I' => 8,  'J' => 9,  'K' => 10, 'L' => 11, 'M' => 12, 'N' => 13, 'O' => 14, 'P' => 15,
+        'Q' => 16, 'R' => 17, 'S' => 18, 'T' => 19, 'U' => 20, 'V' => 21, 'W' => 22, 'X' => 23,
+        'Y' => 24, 'Z' => 25, '2' => 26, '3' => 27, '4' => 28, '5' => 29, '6' => 30, '7' => 31,
+    ];
 
     /**
-     * Encodes binary data to Base32.
+     * Encodes binary data to Base32 using optimized bit manipulation.
      *
      * @param string $data The binary data to encode.
      * @return string The Base32 encoded string.
@@ -31,31 +36,39 @@ final class Base32
             return '';
         }
 
-        $binary = '';
         $length = strlen($data);
-        for ($i = 0; $i < $length; ++$i) {
-            $binary .= str_pad(decbin(ord($data[$i])), 8, '0', STR_PAD_LEFT);
-        }
-
         $output = '';
-        $binaryLength = strlen($binary);
-        for ($i = 0; $i < $binaryLength; $i += 5) {
-            $chunk = substr($binary, $i, 5);
-            $chunk = str_pad($chunk, 5, '0');
-            $output .= self::CHARACTERS[bindec($chunk)];
+        $buffer = 0;
+        $bufferLength = 0;
+
+        // Process input byte by byte using bit manipulation
+        for ($i = 0; $i < $length; $i++) {
+            $buffer = ($buffer << 8) | ord($data[$i]);
+            $bufferLength += 8;
+
+            // Extract 5-bit chunks and encode them
+            while ($bufferLength >= 5) {
+                $bufferLength -= 5;
+                $output .= self::ENCODE_MAP[($buffer >> $bufferLength) & 0x1F];
+            }
         }
 
-        // Add padding if necessary
-        $padding = strlen($output) % 8;
-        if ($padding !== 0) {
-            $output .= str_repeat(self::PADDING_CHAR, 8 - $padding);
+        // Handle remaining bits if any
+        if ($bufferLength > 0) {
+            $output .= self::ENCODE_MAP[($buffer << (5 - $bufferLength)) & 0x1F];
+        }
+
+        // Add RFC 4648 compliant padding
+        $padLength = (8 - (strlen($output) % 8)) % 8;
+        if ($padLength > 0) {
+            $output .= str_repeat('=', $padLength);
         }
 
         return $output;
     }
 
     /**
-     * Decodes a Base32 encoded string to binary data.
+     * Decodes a Base32 encoded string to binary data using optimized lookup.
      *
      * @param string $data The Base32 encoded string.
      * @throws TotpException If the input is not a valid Base32 string.
@@ -67,26 +80,29 @@ final class Base32
             return '';
         }
 
-        $data = rtrim($data, self::PADDING_CHAR);
-        $binary = '';
-
+        // Remove padding
+        $data = rtrim($data, '=');
         $length = strlen($data);
-        for ($i = 0; $i < $length; ++$i) {
+        $output = '';
+        $buffer = 0;
+        $bufferLength = 0;
+
+        // Process each character using a pre-computed lookup table
+        for ($i = 0; $i < $length; $i++) {
             $char = $data[$i];
-            $position = strpos(self::CHARACTERS, $char);
-            if ($position === false) {
+
+            // Check if character is valid Base32 character
+            if (!isset(self::DECODE_MAP[$char])) {
                 throw new TotpException(MessageStore::get('encoding.invalid_base32_char', $char));
             }
 
-            $binary .= str_pad(decbin($position), 5, '0', STR_PAD_LEFT);
-        }
+            $buffer = ($buffer << 5) | self::DECODE_MAP[$char];
+            $bufferLength += 5;
 
-        $output = '';
-        $binaryLength = strlen($binary);
-        for ($i = 0; $i < $binaryLength; $i += 8) {
-            $byte = substr($binary, $i, 8);
-            if (strlen($byte) === 8) {
-                $output .= chr(bindec($byte));
+            // Extract complete bytes
+            if ($bufferLength >= 8) {
+                $bufferLength -= 8;
+                $output .= chr(($buffer >> $bufferLength) & 0xFF);
             }
         }
 
