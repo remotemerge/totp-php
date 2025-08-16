@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace RemoteMerge\Utils;
 
 use RemoteMerge\Totp\TotpException;
+use RemoteMerge\Translation\MessageStore;
 
 final class Base32
 {
@@ -74,7 +75,7 @@ final class Base32
             $char = $data[$i];
             $position = strpos(self::CHARACTERS, $char);
             if ($position === false) {
-                throw new TotpException('Invalid Base32 character: ' . $char);
+                throw new TotpException(MessageStore::get('encoding.invalid_base32_char', $char));
             }
 
             $binary .= str_pad(decbin($position), 5, '0', STR_PAD_LEFT);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace RemoteMerge\Totp;
 
 use Exception;
+use RemoteMerge\Translation\MessageStore;
 use RemoteMerge\Utils\Base32;
 
 final class Totp extends AbstractTotp implements TotpInterface
@@ -20,7 +21,7 @@ final class Totp extends AbstractTotp implements TotpInterface
     {
         if (isset($options['algorithm'])) {
             if (!in_array($options['algorithm'], self::SUPPORTED_ALGORITHMS, true)) {
-                throw new TotpException('Unsupported hash algorithm.');
+                throw new TotpException(MessageStore::get('configuration.unsupported_algorithm'));
             }
 
             $this->algorithm = $options['algorithm'];
@@ -28,7 +29,7 @@ final class Totp extends AbstractTotp implements TotpInterface
 
         if (isset($options['digits'])) {
             if (!in_array($options['digits'], [6, 8], true)) {
-                throw new TotpException('Digits must be either 6 or 8.');
+                throw new TotpException(MessageStore::get('configuration.invalid_digits'));
             }
 
             $this->digits = $options['digits'];
@@ -36,7 +37,7 @@ final class Totp extends AbstractTotp implements TotpInterface
 
         if (isset($options['period'])) {
             if (!is_int($options['period']) || $options['period'] <= 0) {
-                throw new TotpException('Period must be a positive integer.');
+                throw new TotpException(MessageStore::get('configuration.invalid_period'));
             }
 
             $this->period = $options['period'];
