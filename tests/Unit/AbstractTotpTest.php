@@ -33,7 +33,7 @@ class AbstractTotpTest extends TestCase
         $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
 
         $this->expectNotToPerformAssertions();
-        $reflectionMethod->invoke($this->totp, '12345678');
+        $reflectionMethod->invoke($this->totp, 'ABCDEFGH'); // Valid Base32 characters
     }
 
     /**
@@ -49,6 +49,108 @@ class AbstractTotpTest extends TestCase
         $this->expectException(TotpException::class);
         $this->expectExceptionMessage('The secret key is invalid. Its length must be a multiple of 8.');
         $reflectionMethod->invoke($this->totp, '1234567');
+    }
+
+    /**
+     * Test validateSecret with an empty secret.
+     *
+     * @covers \RemoteMerge\Totp\AbstractTotp::validateSecret
+     * @throws ReflectionException
+     */
+    public function test_validate_secret_with_empty_secret(): void
+    {
+        $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
+
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('The secret key cannot be empty.');
+        $reflectionMethod->invoke($this->totp, '');
+    }
+
+    /**
+     * Test validateSecret with invalid Base32 characters.
+     *
+     * @covers \RemoteMerge\Totp\AbstractTotp::validateSecret
+     * @throws ReflectionException
+     */
+    public function test_validate_secret_with_invalid_base32_characters(): void
+    {
+        $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
+
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('The secret key contains invalid characters.');
+        $reflectionMethod->invoke($this->totp, 'ABCD123Z'); // '1' and 'Z' are invalid in Base32
+    }
+
+    /**
+     * Test validateSecret with lowercase characters.
+     *
+     * @covers \RemoteMerge\Totp\AbstractTotp::validateSecret
+     * @throws ReflectionException
+     */
+    public function test_validate_secret_with_lowercase_characters(): void
+    {
+        $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
+
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('The secret key contains invalid characters.');
+        $reflectionMethod->invoke($this->totp, 'abcd2345');
+    }
+
+    /**
+     * Test validateSecret with invalid padding in the middle.
+     *
+     * @covers \RemoteMerge\Totp\AbstractTotp::validateSecret
+     * @throws ReflectionException
+     */
+    public function test_validate_secret_with_invalid_padding_in_middle(): void
+    {
+        $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
+
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('The secret key contains invalid characters.');
+        $reflectionMethod->invoke($this->totp, 'ABCD=567');
+    }
+
+    /**
+     * Test validateSecret with valid Base32 secret without padding.
+     *
+     * @covers \RemoteMerge\Totp\AbstractTotp::validateSecret
+     * @throws ReflectionException
+     */
+    public function test_validate_secret_with_valid_base32_no_padding(): void
+    {
+        $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
+
+        $this->expectNotToPerformAssertions();
+        $reflectionMethod->invoke($this->totp, 'ABCDEFGH'); // Valid Base32
+    }
+
+    /**
+     * Test validateSecret with valid Base32 secret with padding.
+     *
+     * @covers \RemoteMerge\Totp\AbstractTotp::validateSecret
+     * @throws ReflectionException
+     */
+    public function test_validate_secret_with_valid_base32_with_padding(): void
+    {
+        $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
+
+        $this->expectNotToPerformAssertions();
+        $reflectionMethod->invoke($this->totp, 'ABCDEFG='); // Valid Base32 with padding
+    }
+
+    /**
+     * Test validateSecret with multiple padding characters.
+     *
+     * @covers \RemoteMerge\Totp\AbstractTotp::validateSecret
+     * @throws ReflectionException
+     */
+    public function test_validate_secret_with_multiple_padding(): void
+    {
+        $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
+
+        $this->expectNotToPerformAssertions();
+        $reflectionMethod->invoke($this->totp, 'ABCDEF=='); // Valid Base32 with multiple padding
     }
 
     /**
