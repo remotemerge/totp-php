@@ -54,7 +54,7 @@ final class MessageStore implements MessageInterface
     private static function loadMessages(): void
     {
         if (self::$messages === []) {
-            // ⚠️ The `require` require for return value, not file inclusion
+            // Note: Using `require` to get the returned array from the file.
             self::$messages = require __DIR__ . '/messages.php'; //NOSONAR
         }
     }
