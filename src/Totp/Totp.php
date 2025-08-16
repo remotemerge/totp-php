@@ -126,7 +126,7 @@ final class Totp extends AbstractTotp implements TotpInterface
         $currentSlice = $timeSlice ?? $this->getCurrentTimeSlice();
 
         for ($offset = -$discrepancy; $offset <= $discrepancy; ++$offset) {
-            if ($this->getCode($secret, $currentSlice + $offset) === $code) {
+            if (hash_equals($this->getCode($secret, $currentSlice + $offset), $code)) {
                 return true;
             }
         }
