@@ -3,10 +3,5 @@
 # Exit on error
 set -e
 
-su - application <<'EOF'
-cd /var/www/html
-
 # Install dependencies
-/usr/local/bin/php /usr/local/bin/composer install --prefer-dist --optimize-autoloader --no-progress --no-interaction
-
-EOF
+/usr/local/bin/php /usr/bin/composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
