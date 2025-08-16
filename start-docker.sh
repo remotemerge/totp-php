@@ -12,4 +12,4 @@ export USER_ID GROUP_ID
 docker network create rm-pkg-network >/dev/null 2>&1 || true
 
 # Start services
-docker compose --file compose.yml up
+docker compose --file compose.yml up --build

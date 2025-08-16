@@ -12,7 +12,7 @@ ARG USER_ID
 ARG GROUP_ID
 
 # Install required PHP extensions
-# RUN install-php-extensions intl
+RUN install-php-extensions xdebug
 
 # Configure user permissions and ownership for the web server
 RUN docker-php-serversideup-set-id www-data ${USER_ID}:${GROUP_ID}

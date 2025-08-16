@@ -23,8 +23,9 @@ services:
     ports:
       - '8080:8080'
     environment:
-      SHOW_WELCOME_MESSAGE: false
       COMPOSER_ALLOW_SUPERUSER: 0
+      SHOW_WELCOME_MESSAGE: false
+      XDEBUG_MODE: coverage
     networks:
       - rm-pkg-network
     healthcheck:
