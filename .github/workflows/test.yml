@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - name: "Checkout code"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
 
       - name: "Set Xdebug coverage"
         run: echo "XDEBUG_MODE=coverage" >> $GITHUB_ENV
