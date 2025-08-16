@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace RemoteMerge\Totp;
 
+use RemoteMerge\Translation\MessageStore;
+
 abstract class AbstractTotp
 {
     /**
@@ -34,8 +36,19 @@ abstract class AbstractTotp
      */
     protected function validateSecret(string $secret): void
     {
+        // Check if the secret is empty
+        if ($secret === '') {
+            throw new TotpException(MessageStore::get('validation.secret_empty'));
+        }
+
+        // Check length divisibility by 8 (existing validation)
         if (strlen($secret) % 8 !== 0) {
-            throw new TotpException('The secret key is invalid. Its length must be a multiple of 8.');
+            throw new TotpException(MessageStore::get('validation.secret_length'));
+        }
+
+        // Base32 validation: A-Z, 2-7, and optional padding
+        if (preg_match('/^[A-Z2-7]+=*$/', $secret) !== 1) {
+            throw new TotpException(MessageStore::get('validation.secret_characters'));
         }
     }
 
@@ -47,8 +60,8 @@ abstract class AbstractTotp
      */
     protected function validateCode(string $code): void
     {
-        if (strlen($code) !== $this->digits || !ctype_digit($code)) {
-            throw new TotpException(sprintf('The code must be a %d-digit number.', $this->digits));
+        if (preg_match('/^\d{' . $this->digits . '}$/', $code) !== 1) {
+            throw new TotpException(MessageStore::get('validation.code_format', $this->digits));
         }
     }
 

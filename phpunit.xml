@@ -18,6 +18,8 @@
     <exclude>
       <file>src/Totp/TotpException.php</file>
       <file>src/Totp/TotpInterface.php</file>
+      <file>src/Translation/MessageInterface.php</file>
+      <file>src/Translation/messages.php</file>
     </exclude>
   </source>
   <coverage>

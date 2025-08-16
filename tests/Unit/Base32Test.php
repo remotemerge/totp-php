@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use RemoteMerge\Totp\TotpException;
 use RemoteMerge\Utils\Base32;
 
+#[CoversClass(Base32::class)]
 final class Base32Test extends TestCase
 {
     /**
      * Test encoding an empty string.
-     * @covers \RemoteMerge\Utils\Base32::encodeUpper
      */
     public function test_encode_empty_string(): void
     {
@@ -21,7 +22,7 @@ final class Base32Test extends TestCase
 
     /**
      * Test decoding an empty string.
-     * @covers \RemoteMerge\Utils\Base32::decodeUpper
+     *
      * @throws TotpException
      */
     public function test_decode_empty_string(): void
@@ -31,7 +32,6 @@ final class Base32Test extends TestCase
 
     /**
      * Test encoding a simple string.
-     * @covers \RemoteMerge\Utils\Base32::encodeUpper
      */
     public function test_encode_simple_string(): void
     {
@@ -40,7 +40,7 @@ final class Base32Test extends TestCase
 
     /**
      * Test decoding a simple string.
-     * @covers \RemoteMerge\Utils\Base32::decodeUpper
+     *
      * @throws TotpException
      */
     public function test_decode_simple_string(): void
@@ -50,7 +50,6 @@ final class Base32Test extends TestCase
 
     /**
      * Test encoding a string with padding.
-     * @covers \RemoteMerge\Utils\Base32::encodeUpper
      */
     public function test_encode_with_padding(): void
     {
@@ -59,7 +58,7 @@ final class Base32Test extends TestCase
 
     /**
      * Test decoding a string with padding.
-     * @covers \RemoteMerge\Utils\Base32::decodeUpper
+     *
      * @throws TotpException
      */
     public function test_decode_with_padding(): void
@@ -69,7 +68,6 @@ final class Base32Test extends TestCase
 
     /**
      * Test decoding an invalid Base32 string.
-     * @covers \RemoteMerge\Utils\Base32::decodeUpper
      */
     public function test_decode_invalid_string(): void
     {

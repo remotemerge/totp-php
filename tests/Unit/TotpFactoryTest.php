@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use RemoteMerge\Totp\TotpException;
 use RemoteMerge\Totp\TotpFactory;
 use RemoteMerge\Totp\TotpInterface;
 
+#[CoversClass(TotpFactory::class)]
 final class TotpFactoryTest extends TestCase
 {
     /**
      * Test creating a default TOTP instance.
-     * @covers \RemoteMerge\Totp\TotpFactory::create
+     *
      * @throws TotpException
      */
     public function test_create_default(): void
@@ -24,7 +26,7 @@ final class TotpFactoryTest extends TestCase
 
     /**
      * Test creating a configured TOTP instance.
-     * @covers \RemoteMerge\Totp\TotpFactory::create
+     *
      * @throws TotpException
      */
     public function test_create_configured(): void

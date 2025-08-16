@@ -1,0 +1,37 @@
+# Docker Compose configuration for the TOTP Package development environment.
+# If you read this file, start docker compose with the following command:
+# bash start-docker.sh
+
+# Define networks
+networks:
+  rm-pkg-network:
+    name: rm-pkg-network
+    driver: bridge
+    external: true
+
+# Define services
+services:
+  totp-server:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+      args:
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    volumes:
+      - './:/var/www/html'
+    ports:
+      - '8080:8080'
+    environment:
+      COMPOSER_ALLOW_SUPERUSER: 0
+      SHOW_WELCOME_MESSAGE: false
+      XDEBUG_MODE: coverage
+    networks:
+      - rm-pkg-network
+    healthcheck:
+      test: [ 'CMD', 'curl', '-f', 'http://localhost:8080' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped

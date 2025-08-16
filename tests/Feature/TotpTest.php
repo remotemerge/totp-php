@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use RemoteMerge\Totp\TotpException;
 use RemoteMerge\Totp\TotpFactory;
 
+#[CoversClass(TotpFactory::class)]
 final class TotpTest extends TestCase
 {
     /**
      * Test the entire TOTP workflow.
-     * @covers \RemoteMerge\Totp\TotpFactory
      * @throws TotpException
      */
     public function test_totp_workflow(): void
