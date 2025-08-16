@@ -35,7 +35,7 @@ abstract class AbstractTotp
     protected function validateSecret(string $secret): void
     {
         // Check if the secret is empty
-        if (empty($secret)) {
+        if ($secret === '') {
             throw new TotpException('The secret key cannot be empty.');
         }
 
@@ -45,7 +45,7 @@ abstract class AbstractTotp
         }
 
         // Base32 validation: A-Z, 2-7, and optional padding
-        if (!preg_match('/^[A-Z2-7]+=*$/', $secret)) {
+        if (preg_match('/^[A-Z2-7]+=*$/', $secret) !== 1) {
             throw new TotpException('The secret key contains invalid characters.');
         }
     }
