@@ -28,7 +28,7 @@
 
 ## **Why Choose TOTP PHP?**
 
-Looking for a versatile, secure, and reliable TOTP library for PHP that provides easy 2FA integration? TOTP PHP is your ultimate solution for seamless 2FA implementation. This developer friendly, lightweight, and secure library offers unmatched simplicity, performance, and customization, making it perfect for secure login systems, data protection, and enhanced user security. Whether you're safeguarding login systems, securing sensitive data, or enhancing user security, TOTP PHP ensures robust protection with exceptional ease of use and high performance, tailored for modern PHP developers.
+Looking for a versatile, secure, and reliable TOTP library for PHP that provides easy 2FA integration? TOTP PHP is your ultimate solution for seamless 2FA implementation. This developer-friendly, lightweight, and secure library offers unmatched simplicity, performance, and customization, making it perfect for secure login systems, data protection, and enhanced user security. Whether you're safeguarding login systems, securing sensitive data, or enhancing user security, TOTP PHP ensures robust protection with exceptional ease of use and high performance, tailored for modern PHP developers.
 
 ---
 
@@ -41,7 +41,7 @@ Generate cryptographically secure secret keys for TOTP, ensuring maximum securit
 Supports **SHA1, SHA256, and SHA512** for HMAC hashing, giving you flexibility and compatibility with all major authenticator apps.
 
 ✅ **QR Code Integration**  
-Easily generate **QR codes** for seamless setup in authenticator apps like Google Authenticator, Microsoft Authenticator, Authy, and more.
+Easily generates **QR codes** for seamless setup in authenticator apps like Google Authenticator, Microsoft Authenticator, Authy, and more.
 
 ✅ **Customizable Code Length**  
 Generate TOTP codes with **6 or 8 digits**, tailored to your application's needs.
@@ -96,7 +96,7 @@ echo "Generated Secret Key: $secret\n";
 
 **Output:**
 
-```
+```text
 Generated Secret Key: JBSWY3DPEHPK3PXP
 ```
 
@@ -108,7 +108,7 @@ use RemoteMerge\Totp\TotpFactory;
 // Create a new TOTP instance
 $totp = TotpFactory::create();
 
-// Replace with your secret key
+// Replace it with your secret key
 $secret = 'JBSWY3DPEHPK3PXP';
 
 // Generate a TOTP code
@@ -119,7 +119,7 @@ echo "Generated TOTP Code: $code\n";
 
 **Output:**
 
-```
+```text
 Generated TOTP Code: 123456
 ```
 
@@ -131,7 +131,7 @@ use RemoteMerge\Totp\TotpFactory;
 // Create a new TOTP instance
 $totp = TotpFactory::create();
 
-// Replace with your secret key and the code to verify
+// Replace it with your secret key and the code to verify
 $secret = 'JBSWY3DPEHPK3PXP';
 $code = '123456';
 
@@ -143,7 +143,7 @@ echo $isValid ? "✅ Code is valid!\n" : "❌ Code is invalid!\n";
 
 **Output:**
 
-```
+```text
 ✅ Code is valid!
 ```
 
@@ -155,7 +155,7 @@ use RemoteMerge\Totp\TotpFactory;
 // Create a new TOTP instance
 $totp = TotpFactory::create();
 
-// Replace with your secret key and user information
+// Replace it with your secret key and user information
 $secret = 'JBSWY3DPEHPK3PXP';
 $uri = $totp->generateUri($secret, 'user@example.com', 'YourApp');
 
@@ -164,7 +164,7 @@ echo "QR Code URI: $uri\n";
 
 **Output:**
 
-```
+```text
 QR Code URI: otpauth://totp/YourApp:user@example.com?secret=JBSWY3DPEHPK3PXP&issuer=...
 ```
 
@@ -272,17 +272,25 @@ echo "QR Code Image URL: $qrCodeUrl\n";
 Test the TOTP PHP library locally using Docker. This method automatically sets up the environment with all dependencies. Follow these steps:
 
 1. Clone the repository:
+
    ```bash
    git clone git@github.com:remotemerge/totp-php.git
    cd totp-php
    ```
 
 2. Start the Docker container:
+
    ```bash
-   ddocker compose down && docker compose up
+   bash start-docker.sh
    ```
 
 3. Access the application at `http://localhost:8080`.
+
+4. (Optional) Access the container shell for development:
+
+   ```bash
+   bash pkg-cli.sh
+   ```
 
 ---
 
@@ -291,17 +299,20 @@ Test the TOTP PHP library locally using Docker. This method automatically sets u
 For a lightweight setup, use PHP's built-in server. This method is ideal for quick local testing and doesn't require Docker. Follow these steps:
 
 1. Clone the repository:
+
    ```bash
    git clone git@github.com:remotemerge/totp-php.git
    cd totp-php
    ```
 
 2. Install dependencies using Composer:
+
    ```bash
    composer install
    ```
 
 3. Start the PHP built-in server:
+
    ```bash
    php -S localhost:8080 -t public
    ```
@@ -312,15 +323,15 @@ For a lightweight setup, use PHP's built-in server. This method is ideal for qui
 
 ## **Getting Help**
 
-Bugs and feature requests are tracked using GitHub issues, and they are prioritized to ensure the library remains reliable and up-to-date.
+Bugs and feature requests are tracked using GitHub issues, and they are prioritized to ensure the library remains reliable and up to date.
 
-* **Found a Bug?**  
+- **Found a Bug?**  
   If you encounter any issues, please [open an issue](https://github.com/remotemerge/totp-php/issues/new) on GitHub. Every issue is addressed diligently to maintain the library's quality.
 
-* **Need Help with Integration?**  
+- **Need Help with Integration?**  
   For assistance integrating TOTP PHP into your application or questions about its features, feel free to reach out. Helping developers build secure and efficient systems is a top priority.
 
-* **Interested in Collaboration?**  
+- **Interested in Collaboration?**  
   If this library impresses you, and you're looking for a skilled PHP developer to join your team or collaborate on a project, let's connect and build something amazing together.
 
 ---
