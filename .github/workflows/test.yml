@@ -54,7 +54,7 @@ jobs:
           files: ./coverage.xml
 
       - name: "Upload test results to Codecov"
-        if: ${{ !cancelled() && matrix.os == 'ubuntu-latest' && matrix.php == '8.4' }}
+        if: ${{ !cancelled() && matrix.os == 'ubuntu-24.04' && matrix.php == '8.4' }}
         uses: codecov/test-results-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
