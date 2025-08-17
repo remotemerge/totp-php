@@ -22,6 +22,7 @@
 ### Dev configs
 coverage.xml
 junit.xml
+codecov
 
 ### Windows template
 *.lnk
