@@ -67,15 +67,10 @@ final class MessageStore implements MessageInterface
      */
     private static function getNestedValue(array $array, string $key): string
     {
-        $keys = explode('.', $key);
-        $value = $array;
+        $value = self::traverseNestedArray($array, $key);
 
-        foreach ($keys as $k) {
-            if (!is_array($value) || !array_key_exists($k, $value)) {
-                return self::DEFAULT_MESSAGE . ': ' . $key;
-            }
-
-            $value = $value[$k];
+        if ($value === null) {
+            return self::DEFAULT_MESSAGE . ': ' . $key;
         }
 
         return is_string($value) ? $value : self::DEFAULT_MESSAGE . ': ' . $key;
@@ -89,17 +84,30 @@ final class MessageStore implements MessageInterface
      */
     private static function keyExists(array $array, string $key): bool
     {
-        $keys = explode('.', $key);
-        $value = $array;
-
-        foreach ($keys as $k) {
-            if (!is_array($value) || !array_key_exists($k, $value)) {
-                return false;
-            }
-
-            $value = $value[$k];
-        }
+        $value = self::traverseNestedArray($array, $key);
 
         return is_string($value);
+    }
+
+    /**
+     * Traverses a nested array using dot notation and returns the value or null if not found.
+     *
+     * @param array<string, mixed> $array The array to search in.
+     * @param string $pathKey The dot-separated key path to traverse.
+     */
+    private static function traverseNestedArray(array $array, string $pathKey): mixed
+    {
+        $keys = explode('.', $pathKey);
+        $value = $array;
+
+        foreach ($keys as $key) {
+            if (!is_array($value) || !array_key_exists($key, $value)) {
+                return null;
+            }
+
+            $value = $value[$key];
+        }
+
+        return $value;
     }
 }
