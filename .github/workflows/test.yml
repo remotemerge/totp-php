@@ -26,6 +26,9 @@ jobs:
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v5
+        with:
+          # Fetch all history for all tags and branches
+          fetch-depth: 0
 
       - name: "Set Xdebug coverage"
         run: echo "XDEBUG_MODE=coverage" >> $GITHUB_ENV
