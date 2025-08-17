@@ -55,7 +55,7 @@ final class MessageStore implements MessageInterface
     {
         if (self::$messages === []) {
             // Note: Using `require` to get the returned array from the file.
-            self::$messages = require __DIR__ . '/../Data/messages.php'; //NOSONAR
+            self::$messages = require dirname(__DIR__) . '/Data/messages.php'; //NOSONAR
         }
     }
 
