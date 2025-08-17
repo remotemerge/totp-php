@@ -2,9 +2,9 @@
 
 [![PHP Version](https://img.shields.io/packagist/php-v/remotemerge/totp-php?logo=php&style=flat)](https://github.com/remotemerge/totp-php)
 [![Tests](https://img.shields.io/github/actions/workflow/status/remotemerge/totp-php/test.yml?style=flat&logo=counterstrike&label=test)](https://github.com/remotemerge/totp-php)
-[![Sonar Quality Gate (branch)](https://img.shields.io/sonar/quality_gate/totp-php/main?server=https%3A%2F%2Fsonarcloud.io&style=flat&logo=sonarqubecloud&logoColor=126ED3&label=quality)](https://sonarcloud.io/summary/overall?id=totp-php&branch=main)
-[![Coverage](https://img.shields.io/codecov/c/github/remotemerge/totp-php?style=flat&logo=codecov)](https://app.codecov.io/gh/remotemerge/totp-php)
 [![Build](https://img.shields.io/github/actions/workflow/status/remotemerge/totp-php/install.yml?style=flat&logo=github)](https://github.com/remotemerge/totp-php)
+[![Sonar Quality](https://img.shields.io/sonar/quality_gate/totp-php/main?server=https%3A%2F%2Fsonarcloud.io&style=flat&logo=sonarqubecloud&logoColor=126ED3&label=quality)](https://sonarcloud.io/summary/overall?id=totp-php&branch=main)
+[![Sonar Coverage](https://img.shields.io/sonar/coverage/totp-php/main?server=https%3A%2F%2Fsonarcloud.io&style=flat&logo=sonarqubeserver&logoColor=126ED3)](https://sonarcloud.io/summary/overall?id=totp-php&branch=main)
 [![Version](https://img.shields.io/packagist/v/remotemerge/totp-php?style=flat&label=version)](https://github.com/remotemerge/totp-php)
 [![Downloads](https://img.shields.io/packagist/dt/remotemerge/totp-php.svg?style=flat&label=downloads)](https://packagist.org/packages/remotemerge/totp-php)
 [![License](https://img.shields.io/github/license/remotemerge/totp-php)](https://github.com/remotemerge/totp-php?tab=MIT-1-ov-file)

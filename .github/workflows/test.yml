@@ -54,21 +54,3 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      - name: "Upload coverage to Codecov"
-        if: ${{ !cancelled() && matrix.os == 'ubuntu-24.04' && matrix.php == '8.4' }}
-        uses: codecov/codecov-action@v5
-        with:
-          name: codecov-umbrella
-          token: ${{ secrets.CODECOV_TOKEN }}
-          env_vars: OS,PHP
-          files: ./coverage.xml
-          fail_ci_if_error: true
-          verbose: true
-          flags: unittests
-
-      - name: "Upload test results to Codecov"
-        if: ${{ !cancelled() && matrix.os == 'ubuntu-24.04' && matrix.php == '8.4' }}
-        uses: codecov/test-results-action@v1
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
