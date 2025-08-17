@@ -17,9 +17,9 @@
     </include>
     <exclude>
       <file>src/Data/messages.php</file>
+      <file>src/Message/MessageInterface.php</file>
       <file>src/Totp/TotpException.php</file>
       <file>src/Totp/TotpInterface.php</file>
-      <file>src/Translation/MessageInterface.php</file>
     </exclude>
   </source>
   <coverage>
