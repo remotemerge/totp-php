@@ -41,7 +41,7 @@ jobs:
         run: php --version && composer --version
 
       - name: "Install dependencies"
-        run: composer install --no-interaction --prefer-dist
+        run: composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
 
       - name: "Run PHPUnit tests"
         run: ./vendor/bin/phpunit
