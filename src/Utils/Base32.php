@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace RemoteMerge\Utils;
 
+use RemoteMerge\Message\MessageStore;
 use RemoteMerge\Totp\TotpException;
-use RemoteMerge\Translation\MessageStore;
 
 final class Base32
 {
@@ -24,7 +24,7 @@ final class Base32
         'Y' => 24, 'Z' => 25, '2' => 26, '3' => 27, '4' => 28, '5' => 29, '6' => 30, '7' => 31,
     ];
 
-    /** Mask to extract 8 bits (1 byte) from buffer */
+    /** Mask to extract 8 bits (1 byte) from a buffer */
     private const BYTE_MASK = 0xFF;
 
     /** Mask to extract 5 bits for Base32 character mapping */

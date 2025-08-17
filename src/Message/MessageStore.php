@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RemoteMerge\Translation;
+namespace RemoteMerge\Message;
 
 /**
  * Static message store for centralized message management.

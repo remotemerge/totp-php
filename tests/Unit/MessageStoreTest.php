@@ -7,7 +7,7 @@ namespace Tests\Unit;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
-use RemoteMerge\Translation\MessageStore;
+use RemoteMerge\Message\MessageStore;
 
 #[CoversClass(MessageStore::class)]
 final class MessageStoreTest extends TestCase
@@ -162,10 +162,10 @@ final class MessageStoreTest extends TestCase
     public function test_load_messages_only_loaded_once(): void
     {
         // Reset the static messages array to test fresh loading
-        // Safe: This is a unit test that needs to reset static state for testing isolation
+        // Safe: This is a unit test that needs to reset the static state for testing isolation
         $reflectionClass = new ReflectionClass(MessageStore::class);
         $reflectionProperty = $reflectionClass->getProperty('messages');
-        // Safe: Setting private property to empty array for test setup - controlled test environment
+        // Safe: Setting private property to an empty array for test-setup - controlled test environment
         $reflectionProperty->setValue(null, []);
 
         // The first call should load messages
@@ -173,8 +173,8 @@ final class MessageStoreTest extends TestCase
         $this->assertSame(MessageStore::get('validation.secret_empty'), $first);
 
         // Verify messages are now cached
-        // Safe: Reading private property to verify internal state in controlled test
-        $cachedMessages = $reflectionProperty->getValue(null);
+        // Safe: Reading private property to verify internal state in a controlled test
+        $cachedMessages = $reflectionProperty->getValue();
         $this->assertNotEmpty($cachedMessages);
 
         // The second call should use cached messages

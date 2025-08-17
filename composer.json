@@ -47,7 +47,7 @@
   "extra": {},
   "autoload": {
     "psr-4": {
-      "RemoteMerge\\Translation\\": "src/Translation",
+      "RemoteMerge\\Message\\": "src/Message",
       "RemoteMerge\\Totp\\": "src/Totp",
       "RemoteMerge\\Utils\\": "src/Utils"
     }

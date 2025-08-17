@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RemoteMerge\Translation;
+namespace RemoteMerge\Message;
 
 /**
  * Interface for message retrieval services.

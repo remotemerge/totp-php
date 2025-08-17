@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace RemoteMerge\Totp;
 
-use RemoteMerge\Translation\MessageStore;
+use RemoteMerge\Message\MessageStore;
 
 abstract class AbstractTotp
 {

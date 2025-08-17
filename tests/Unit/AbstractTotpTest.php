@@ -8,10 +8,10 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use ReflectionException;
+use RemoteMerge\Message\MessageStore;
 use RemoteMerge\Totp\AbstractTotp;
 use RemoteMerge\Totp\Totp;
 use RemoteMerge\Totp\TotpException;
-use RemoteMerge\Translation\MessageStore;
 
 #[CoversClass(AbstractTotp::class)]
 class AbstractTotpTest extends TestCase

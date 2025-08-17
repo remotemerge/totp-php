@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace RemoteMerge\Totp;
 
 use Exception;
-use RemoteMerge\Translation\MessageStore;
+use RemoteMerge\Message\MessageStore;
 use RemoteMerge\Utils\Base32;
 
 final class Totp extends AbstractTotp implements TotpInterface
