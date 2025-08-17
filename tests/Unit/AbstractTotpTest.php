@@ -11,6 +11,7 @@ use ReflectionException;
 use RemoteMerge\Totp\AbstractTotp;
 use RemoteMerge\Totp\Totp;
 use RemoteMerge\Totp\TotpException;
+use RemoteMerge\Translation\MessageStore;
 
 #[CoversClass(AbstractTotp::class)]
 class AbstractTotpTest extends TestCase
@@ -62,7 +63,7 @@ class AbstractTotpTest extends TestCase
         $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
 
         $this->expectException(TotpException::class);
-        $this->expectExceptionMessage('The secret key cannot be empty.');
+        $this->expectExceptionMessage(MessageStore::get('validation.secret_empty'));
         $reflectionMethod->invoke($this->totp, '');
     }
 
@@ -76,7 +77,7 @@ class AbstractTotpTest extends TestCase
         $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
 
         $this->expectException(TotpException::class);
-        $this->expectExceptionMessage('The secret key contains invalid characters.');
+        $this->expectExceptionMessage(MessageStore::get('validation.secret_characters'));
         $reflectionMethod->invoke($this->totp, 'ABCD123Z'); // '1' and 'Z' are invalid in Base32
     }
 
@@ -90,7 +91,7 @@ class AbstractTotpTest extends TestCase
         $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
 
         $this->expectException(TotpException::class);
-        $this->expectExceptionMessage('The secret key contains invalid characters.');
+        $this->expectExceptionMessage(MessageStore::get('validation.secret_characters'));
         $reflectionMethod->invoke($this->totp, 'abcd2345');
     }
 
@@ -104,7 +105,7 @@ class AbstractTotpTest extends TestCase
         $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
 
         $this->expectException(TotpException::class);
-        $this->expectExceptionMessage('The secret key contains invalid characters.');
+        $this->expectExceptionMessage(MessageStore::get('validation.secret_characters'));
         $reflectionMethod->invoke($this->totp, 'ABCD=567');
     }
 
@@ -118,7 +119,7 @@ class AbstractTotpTest extends TestCase
         $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
 
         $this->expectNotToPerformAssertions();
-        $reflectionMethod->invoke($this->totp, 'ABCDEFGH'); // Valid Base32
+        $reflectionMethod->invoke($this->totp, 'JBSWY3DPEHPK3PXP'); // Valid Base32 without padding
     }
 
     /**
