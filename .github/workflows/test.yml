@@ -16,7 +16,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-24.04, windows-latest, macos-latest ]
+        os: [ ubuntu-24.04, windows-2025, macos-15 ]
         php: [ '8.1', '8.2', '8.3', '8.4' ]
 
     env:
@@ -41,12 +41,19 @@ jobs:
         run: php --version && composer --version
 
       - name: "Install dependencies"
-        run: composer install --no-interaction --prefer-dist
+        run: composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
 
       - name: "Run PHPUnit tests"
         run: ./vendor/bin/phpunit
 
+      - name: "Run SonarQube Scan"
+        if: ${{ !cancelled() && matrix.os == 'ubuntu-24.04' && matrix.php == '8.4' }}
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
       - name: "Upload coverage to Codecov"
+        if: ${{ !cancelled() && matrix.os == 'ubuntu-24.04' && matrix.php == '8.4' }}
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
