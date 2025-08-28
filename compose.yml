@@ -24,6 +24,7 @@ services:
       - '8080:8080'
     environment:
       COMPOSER_ALLOW_SUPERUSER: 0
+      COMPOSER_ROOT_VERSION: 1.0.0
       SHOW_WELCOME_MESSAGE: false
       XDEBUG_MODE: coverage
     networks:
