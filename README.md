@@ -165,7 +165,7 @@ echo "QR Code URI: $uri\n";
 **Output:**
 
 ```text
-QR Code URI: otpauth://totp/YourApp:user@example.com?secret=JBSWY3DPEHPK3PXP&issuer=...
+QR Code URI: otpauth://totp/YourApp:user%40example.com?secret=JBSWY3DPEHPK3PXP&issuer=YourApp&algorithm=SHA1&digits=6&period=30
 ```
 
 ---
@@ -182,7 +182,7 @@ use RemoteMerge\Totp\TotpFactory;
 $totp = TotpFactory::create();
 
 // Configure the algorithm
-$totp->configure(['algorithm' => 'sha256']);
+$totp->configure(['algorithm' => 'SHA256']);
 
 $secret = $totp->generateSecret();
 $code = $totp->getCode($secret);
