@@ -16,56 +16,80 @@
 |----|-----------------------------------------|-----------------------------------------------------------------------------|
 | 1  | [Why TOTP PHP?](#why-choose-totp-php)   | Ideal for secure logins, data protection, and enhanced user security.       |
 | 2  | [Key Features](#key-features)           | Secure secret generation, multi-algorithm support, QR codes, customization. |
-| 3  | [Get Started](#get-started-in-minutes)  | Quick installation via Composer and simple usage examples.                  |
-| 4  | [Basic Usage](#basic-usage)             | Generate secrets, TOTP codes, verify codes, and create QR code URIs.        |
-| 5  | [Customization](#customization-options) | Change hash algorithms, code length, and time slice duration.               |
-| 6  | [Advanced Usage](#advanced-usage)       | Verify codes with discrepancy and generate QR code images.                  |
-| 7  | [Try with Docker](#try-with-docker)     | Test locally using Docker for quick setup.                                  |
-| 8  | [Try without Docker](#try-with-php)     | Use PHP's built-in server for lightweight local testing.                    |
-| 9  | [Getting Help](#getting-help)           | Report bugs, get integration help, or collaborate on projects.              |
-| 10 | [Contribution](#contribution)           | Follow coding standards, test code, and submit pull requests.               |
-| 11 | [Screenshots](#screenshots)             | Visual demo of the library in action.                                       |
+| 3  | [Compatibility](#compatibility)         | Works seamlessly with all major authenticator apps and RFC-compliant tools. |
+| 4  | [Get Started](#get-started-in-minutes)  | Quick installation via Composer and simple usage examples.                  |
+| 5  | [Basic Usage](#basic-usage)             | Generate secrets, TOTP codes, verify codes, and create QR code URIs.        |
+| 6  | [Customization](#customization-options) | Change hash algorithms, code length, and time slice duration.               |
+| 7  | [Advanced Usage](#advanced-usage)       | Verify codes with discrepancy and generate QR code images.                  |
+| 8  | [Try with Docker](#try-with-docker)     | Test locally using Docker for quick setup.                                  |
+| 9  | [Try without Docker](#try-with-php)     | Use PHP's built-in server for lightweight local testing.                    |
+| 10 | [Getting Help](#getting-help)           | Report bugs, get integration help, or collaborate on projects.              |
+| 11 | [Contribution](#contribution)           | Follow coding standards, test code, and submit pull requests.               |
+| 12 | [Screenshots](#screenshots)             | Visual demo of the library in action.                                       |
 
 ## **Why Choose TOTP PHP?**
 
-Looking for a versatile, secure, and reliable TOTP library for PHP that provides easy 2FA integration? TOTP PHP is your ultimate solution for seamless 2FA implementation. This developer-friendly, lightweight, and secure library offers unmatched simplicity, performance, and customization, making it perfect for secure login systems, data protection, and enhanced user security. Whether you're safeguarding login systems, securing sensitive data, or enhancing user security, TOTP PHP ensures robust protection with exceptional ease of use and high performance, tailored for modern PHP developers.
+TOTP PHP is a versatile, secure, and reliable TOTP library for PHP that provides easy 2FA integration. This developer-friendly, lightweight, and secure library offers simplicity, performance, and customization for secure login systems, data protection, and enhanced user security. TOTP PHP ensures robust protection with ease of use and high performance, designed for modern PHP developers.
 
 ---
 
 ## **Key Features**
 
-✅ **Secure Secret Generation**  
-Generate cryptographically secure secret keys for TOTP, ensuring maximum security for your users.
+✅ **Secure Secret Generation**
+Generates cryptographically secure secret keys for TOTP, ensuring maximum security.
 
-✅ **Multi Algorithm Support**  
-Supports **SHA1, SHA256, and SHA512** for HMAC hashing, giving you flexibility and compatibility with all major authenticator apps.
+✅ **Multi Algorithm Support**
+Supports **SHA1, SHA256, and SHA512** for HMAC hashing, providing flexibility and compatibility with all major authenticator apps.
 
-✅ **QR Code Integration**  
-Easily generates **QR codes** for seamless setup in authenticator apps like Google Authenticator, Microsoft Authenticator, Authy, and more.
+✅ **QR Code Integration**
+Generates **QR codes** for seamless setup in authenticator apps like Google Authenticator, Microsoft Authenticator, Authy, and more.
 
-✅ **Customizable Code Length**  
-Generate TOTP codes with **6 or 8 digits**, tailored to your application's needs.
+✅ **Customizable Code Length**
+Generates TOTP codes with **6 or 8 digits**, configurable based on application requirements.
 
-✅ **Time Slice Configuration**  
-Customize the time slice duration (e.g., **30 or 60 seconds**) to match your security requirements.
+✅ **Time Slice Configuration**
+Configurable time slice duration (e.g., **30 or 60 seconds**) to match security requirements.
 
 ✅ **Discrepancy Verification**
-Allow a **time slice discrepancy** when verifying TOTP codes, ensuring a smooth user experience. This is especially useful for handling clock drifts.
+Allows **time slice discrepancy** when verifying TOTP codes, ensuring a smooth user experience. This is especially useful for handling clock drifts.
 
-✅ **Easy Verification**  
-Verify TOTP codes with a **simple and intuitive API**, making integration a breeze.
+✅ **Easy Verification**
+Verifies TOTP codes with a **simple and intuitive API**, making integration straightforward.
 
-✅ **Lightweight and Fast**  
+✅ **Lightweight and Fast**
 Built for performance, TOTP PHP is **lightweight** and optimized for speed, ensuring minimal overhead.
 
-✅ **Developer Friendly**  
+✅ **Developer Friendly**
 Designed with developers in mind, TOTP PHP is **easy to use**, well-documented, and fully tested.
+
+---
+
+## **Compatibility**
+
+TOTP PHP is built to **universal standards** and works seamlessly with **all major authenticator applications** worldwide. Whether users prefer mobile apps, desktop tools, or hardware tokens, this library ensures flawless compatibility across the entire ecosystem.
+
+### **Supported Authenticator Apps**
+
+| 📱 **Mobile Authenticators** | 💻 **Desktop & Hardware** |
+|------------------------------|---------------------------|
+| ✅ Google Authenticator       | ✅ YubiKey Authenticator   |
+| ✅ Microsoft Authenticator    | ✅ FreeOTP                 |
+| ✅ Authy                      | ✅ OTP Auth (iOS)          |
+| ✅ Duo Mobile                 | ✅ Aegis Authenticator     |
+| ✅ 1Password                  | ✅ andOTP                  |
+| ✅ LastPass Authenticator     | ✅ Any RFC-compliant tool  |
+| ✅ Bitwarden Authenticator    |                           |
+
+### **Standards Compliance**
+
+🔒 **RFC-Compliant Implementation**
+TOTP PHP fully adheres to the **IETF otpauth URI specification** and the **Key URI Format standard**, ensuring maximum interoperability with any RFC-compliant two-factor authentication tool. The library works reliably across platforms, devices, and authenticator applications without vendor lock-in.
 
 ---
 
 ## **Get Started in Minutes**
 
-Adding TOTP PHP to your project is quick and easy. THe library requires **PHP 8.1** or higher. Here's how to get started:
+Adding TOTP PHP to a project is quick and easy. The library requires **PHP 8.1** or higher.
 
 ### **Installation**
 
@@ -108,7 +132,7 @@ use RemoteMerge\Totp\TotpFactory;
 // Create a new TOTP instance
 $totp = TotpFactory::create();
 
-// Replace it with your secret key
+// Example secret key
 $secret = 'JBSWY3DPEHPK3PXP';
 
 // Generate a TOTP code
@@ -131,7 +155,7 @@ use RemoteMerge\Totp\TotpFactory;
 // Create a new TOTP instance
 $totp = TotpFactory::create();
 
-// Replace it with your secret key and the code to verify
+// Example secret key and code
 $secret = 'JBSWY3DPEHPK3PXP';
 $code = '123456';
 
@@ -155,7 +179,7 @@ use RemoteMerge\Totp\TotpFactory;
 // Create a new TOTP instance
 $totp = TotpFactory::create();
 
-// Replace it with your secret key and user information
+// Example secret key and user information
 $secret = 'JBSWY3DPEHPK3PXP';
 $uri = $totp->generateUri($secret, 'user@example.com', 'YourApp');
 
@@ -165,7 +189,7 @@ echo "QR Code URI: $uri\n";
 **Output:**
 
 ```text
-QR Code URI: otpauth://totp/YourApp:user@example.com?secret=JBSWY3DPEHPK3PXP&issuer=...
+QR Code URI: otpauth://totp/YourApp:user%40example.com?secret=JBSWY3DPEHPK3PXP&issuer=YourApp&algorithm=SHA1&digits=6&period=30
 ```
 
 ---
@@ -174,7 +198,7 @@ QR Code URI: otpauth://totp/YourApp:user@example.com?secret=JBSWY3DPEHPK3PXP&iss
 
 ### **Change the Hash Algorithm**
 
-By default, TOTP PHP uses **SHA1**. You can switch to **SHA256** or **SHA512**:
+By default, TOTP PHP uses **SHA1**. The algorithm can be configured to use **SHA256** or **SHA512**:
 
 ```php
 use RemoteMerge\Totp\TotpFactory;
@@ -182,7 +206,7 @@ use RemoteMerge\Totp\TotpFactory;
 $totp = TotpFactory::create();
 
 // Configure the algorithm
-$totp->configure(['algorithm' => 'sha256']);
+$totp->configure(['algorithm' => 'SHA256']);
 
 $secret = $totp->generateSecret();
 $code = $totp->getCode($secret);
@@ -192,7 +216,7 @@ echo "Generated TOTP Code (SHA256): $code\n";
 
 ### **Change the Code Length**
 
-By default, TOTP PHP generates **6-digit codes**. You can switch to **8-digit codes**:
+By default, TOTP PHP generates **6-digit codes**. The length can be configured to **8 digits**:
 
 ```php
 use RemoteMerge\Totp\TotpFactory;
@@ -210,7 +234,7 @@ echo "Generated 8-Digit TOTP Code: $code\n";
 
 ### **Change the Time Slice Duration**
 
-By default, TOTP PHP uses a **30-second time slice**. You can switch to **60 seconds**:
+By default, TOTP PHP uses a **30-second time slice**. The duration can be configured to **60 seconds**:
 
 ```php
 use RemoteMerge\Totp\TotpFactory;
@@ -323,29 +347,26 @@ For a lightweight setup, use PHP's built-in server. This method is ideal for qui
 
 ## **Getting Help**
 
-Bugs and feature requests are tracked using GitHub issues, and they are prioritized to ensure the library remains reliable and up to date.
+Bugs and feature requests are tracked using GitHub issues and prioritized to ensure the library remains reliable and up to date.
 
-- **Found a Bug?**  
-  If you encounter any issues, please [open an issue](https://github.com/remotemerge/totp-php/issues/new) on GitHub. Every issue is addressed diligently to maintain the library's quality.
+- **Bug Reports**
+  Issues can be reported by [opening an issue](https://github.com/remotemerge/totp-php/issues/new) on GitHub. All issues are addressed diligently to maintain the library's quality.
 
-- **Need Help with Integration?**  
-  For assistance integrating TOTP PHP into your application or questions about its features, feel free to reach out. Helping developers build secure and efficient systems is a top priority.
-
-- **Interested in Collaboration?**  
-  If this library impresses you, and you're looking for a skilled PHP developer to join your team or collaborate on a project, let's connect and build something amazing together.
+- **Integration Assistance**
+  For assistance with integration or questions about features, please open a GitHub issue or discussion.
 
 ---
 
 ## **Contribution**
 
-The contributions of the **Open Source community** are highly valued and appreciated. To ensure a smooth and efficient process, please adhere to the following guidelines when submitting code:
+Contributions from the **Open Source community** are highly valued and appreciated. To ensure a smooth and efficient process, contributors should adhere to the following guidelines:
 
-- **Coding Standards**: Ensure that the code adheres to [PER Coding Style 2.0](https://www.php-fig.org/per/coding-style/) standards.
+- **Coding Standards**: Code must adhere to [PER Coding Style 3.0](https://www.php-fig.org/per/coding-style/) standards.
 - **Testing**: All submitted code must pass relevant tests to maintain the library's reliability.
 - **Documentation**: Proper documentation and clean code practices are essential for maintainability.
-- **Pull Requests**: Please make pull requests to the `main` branch.
+- **Pull Requests**: Pull requests should be made to the `main` branch.
 
-Thank you for your support and contributions. Looking forward to reviewing your code and building something amazing together!
+All contributions are reviewed and appreciated.
 
 ## **Screenshots**
 

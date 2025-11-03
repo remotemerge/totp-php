@@ -66,7 +66,8 @@ interface TotpInterface
      * @param string $secret The secret key.
      * @param string $label The label for the account (e.g., user@example.com).
      * @param string $issuer The issuer of the TOTP (e.g., Abc Corp).
-     * @return string The TOTP URI in the format `otpauth://totp/{label}?secret={secret}&issuer={issuer}&algorithm={algorithm}&digits={digits}&period={period}`.
+     * @return string The TOTP URI in the format `otpauth://totp/{issuer}:{label}?secret={secret}&issuer={issuer}&algorithm={ALGORITHM}&digits={digits}&period={period}`.
+     *               The algorithm is returned in uppercase (e.g., SHA1, SHA256, SHA512) per the Key URI Format specification.
      */
     public function generateUri(string $secret, string $label, string $issuer): string;
 }

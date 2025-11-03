@@ -1,8 +1,5 @@
-# Build arguments
-ARG PHP_IMAGE_TAG=8.1-unit
-
 # Use PHP with Nginx Unit as the base image
-FROM serversideup/php:${PHP_IMAGE_TAG}
+FROM serversideup/php:8.1-fpm-nginx
 
 # Switch to root user to perform system-level operations
 USER root
@@ -18,7 +15,7 @@ RUN install-php-extensions xdebug
 RUN docker-php-serversideup-set-id www-data ${USER_ID}:${GROUP_ID}
 
 # Set the user to match host user for proper file permissions
-RUN docker-php-serversideup-set-file-permissions --owner ${USER_ID}:${GROUP_ID} --service unit
+RUN docker-php-serversideup-set-file-permissions --owner ${USER_ID}:${GROUP_ID} --service nginx
 
 # Create and configure Composer cache directory
 RUN mkdir -p /composer/cache && chown -R www-data:www-data /composer/cache

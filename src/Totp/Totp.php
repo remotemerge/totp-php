@@ -142,16 +142,17 @@ final class Totp extends AbstractTotp implements TotpInterface
      * @param string $label The label for the account (e.g., user@example.com).
      * @param string $issuer The issuer of the TOTP (e.g., the service name).
      * @throws TotpException If the secret key is invalid.
-     * @return string The TOTP URI in the format `otpauth://totp/{label}?secret={secret}&issuer={issuer}&algorithm={algorithm}&digits={digits}&period={period}`.
+     * @return string The TOTP URI in the format `otpauth://totp/{issuer}:{label}?secret={secret}&issuer={issuer}&algorithm={ALGORITHM}&digits={digits}&period={period}`.
+     *               The algorithm is returned in uppercase (e.g., SHA1, SHA256, SHA512) per the Key URI Format specification.
      */
     public function generateUri(string $secret, string $label, string $issuer): string
     {
         $this->validateSecret($secret);
 
-        $strUri = 'otpauth://totp/%s?secret=%s&issuer=%s&algorithm=%s&digits=%d&period=%d';
-        $label = rawurlencode($label);
-        $issuer = rawurlencode($issuer);
+        $strUri = 'otpauth://totp/%s:%s?secret=%s&issuer=%s&algorithm=%s&digits=%d&period=%d';
+        $encodedLabel = rawurlencode($label);
+        $encodedIssuer = rawurlencode($issuer);
 
-        return sprintf($strUri, $label, $secret, $issuer, $this->algorithm, $this->digits, $this->period);
+        return sprintf($strUri, $encodedIssuer, $encodedLabel, $secret, $encodedIssuer, strtoupper($this->algorithm), $this->digits, $this->period);
     }
 }
