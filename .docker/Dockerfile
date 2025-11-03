@@ -1,5 +1,5 @@
 # Use PHP with Nginx Unit as the base image
-FROM serversideup/php:8.1-fpm-nginx
+FROM serversideup/php:8.4-fpm-nginx
 
 # Switch to root user to perform system-level operations
 USER root
