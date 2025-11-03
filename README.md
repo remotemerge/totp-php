@@ -16,15 +16,16 @@
 |----|-----------------------------------------|-----------------------------------------------------------------------------|
 | 1  | [Why TOTP PHP?](#why-choose-totp-php)   | Ideal for secure logins, data protection, and enhanced user security.       |
 | 2  | [Key Features](#key-features)           | Secure secret generation, multi-algorithm support, QR codes, customization. |
-| 3  | [Get Started](#get-started-in-minutes)  | Quick installation via Composer and simple usage examples.                  |
-| 4  | [Basic Usage](#basic-usage)             | Generate secrets, TOTP codes, verify codes, and create QR code URIs.        |
-| 5  | [Customization](#customization-options) | Change hash algorithms, code length, and time slice duration.               |
-| 6  | [Advanced Usage](#advanced-usage)       | Verify codes with discrepancy and generate QR code images.                  |
-| 7  | [Try with Docker](#try-with-docker)     | Test locally using Docker for quick setup.                                  |
-| 8  | [Try without Docker](#try-with-php)     | Use PHP's built-in server for lightweight local testing.                    |
-| 9  | [Getting Help](#getting-help)           | Report bugs, get integration help, or collaborate on projects.              |
-| 10 | [Contribution](#contribution)           | Follow coding standards, test code, and submit pull requests.               |
-| 11 | [Screenshots](#screenshots)             | Visual demo of the library in action.                                       |
+| 3  | [Compatibility](#compatibility)         | Works seamlessly with all major authenticator apps and RFC-compliant tools. |
+| 4  | [Get Started](#get-started-in-minutes)  | Quick installation via Composer and simple usage examples.                  |
+| 5  | [Basic Usage](#basic-usage)             | Generate secrets, TOTP codes, verify codes, and create QR code URIs.        |
+| 6  | [Customization](#customization-options) | Change hash algorithms, code length, and time slice duration.               |
+| 7  | [Advanced Usage](#advanced-usage)       | Verify codes with discrepancy and generate QR code images.                  |
+| 8  | [Try with Docker](#try-with-docker)     | Test locally using Docker for quick setup.                                  |
+| 9  | [Try without Docker](#try-with-php)     | Use PHP's built-in server for lightweight local testing.                    |
+| 10 | [Getting Help](#getting-help)           | Report bugs, get integration help, or collaborate on projects.              |
+| 11 | [Contribution](#contribution)           | Follow coding standards, test code, and submit pull requests.               |
+| 12 | [Screenshots](#screenshots)             | Visual demo of the library in action.                                       |
 
 ## **Why Choose TOTP PHP?**
 
@@ -58,8 +59,31 @@ Verify TOTP codes with a **simple and intuitive API**, making integration a bree
 ✅ **Lightweight and Fast**  
 Built for performance, TOTP PHP is **lightweight** and optimized for speed, ensuring minimal overhead.
 
-✅ **Developer Friendly**  
+✅ **Developer Friendly**
 Designed with developers in mind, TOTP PHP is **easy to use**, well-documented, and fully tested.
+
+---
+
+## **Compatibility**
+
+TOTP PHP is built to **universal standards** and works seamlessly with **all major authenticator applications** worldwide. Whether your users prefer mobile apps, desktop tools, or hardware tokens, this library ensures flawless compatibility across the entire ecosystem.
+
+### **Supported Authenticator Apps**
+
+| 📱 **Mobile Authenticators** | 💻 **Desktop & Hardware** |
+|------------------------------|---------------------------|
+| ✅ Google Authenticator       | ✅ YubiKey Authenticator   |
+| ✅ Microsoft Authenticator    | ✅ FreeOTP                 |
+| ✅ Authy                      | ✅ OTP Auth (iOS)          |
+| ✅ Duo Mobile                 | ✅ Aegis Authenticator     |
+| ✅ 1Password                  | ✅ andOTP                  |
+| ✅ LastPass Authenticator     | ✅ Any RFC-compliant tool  |
+| ✅ Bitwarden Authenticator    |                           |
+
+### **Standards Compliance**
+
+🔒 **RFC-Compliant Implementation**
+TOTP PHP fully adheres to the **IETF otpauth URI specification** and the **Key URI Format standard**, ensuring maximum interoperability with any RFC-compliant two-factor authentication tool. Your implementation will work reliably across platforms, devices, and authenticator applications without vendor lock-in.
 
 ---
 
