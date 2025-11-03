@@ -66,7 +66,7 @@ Designed with developers in mind, TOTP PHP is **easy to use**, well-documented, 
 
 ## **Compatibility**
 
-TOTP PHP is built to **universal standards** and works seamlessly with **all major authenticator applications** worldwide. Whether your users prefer mobile apps, desktop tools, or hardware tokens, this library ensures flawless compatibility across the entire ecosystem.
+TOTP PHP is built to **universal standards** and works seamlessly with **all major authenticator applications** worldwide. Whether users prefer mobile apps, desktop tools, or hardware tokens, this library ensures flawless compatibility across the entire ecosystem.
 
 ### **Supported Authenticator Apps**
 
@@ -83,7 +83,7 @@ TOTP PHP is built to **universal standards** and works seamlessly with **all maj
 ### **Standards Compliance**
 
 🔒 **RFC-Compliant Implementation**
-TOTP PHP fully adheres to the **IETF otpauth URI specification** and the **Key URI Format standard**, ensuring maximum interoperability with any RFC-compliant two-factor authentication tool. Your implementation will work reliably across platforms, devices, and authenticator applications without vendor lock-in.
+TOTP PHP fully adheres to the **IETF otpauth URI specification** and the **Key URI Format standard**, ensuring maximum interoperability with any RFC-compliant two-factor authentication tool. The library works reliably across platforms, devices, and authenticator applications without vendor lock-in.
 
 ---
 
