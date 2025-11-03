@@ -51,6 +51,6 @@ jobs:
 
       - name: "Run SonarQube Scan"
         if: ${{ !cancelled() && matrix.os == 'ubuntu-24.04' && matrix.php == '8.4' }}
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
