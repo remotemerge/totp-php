@@ -14,7 +14,7 @@ use RemoteMerge\Totp\Totp;
 use RemoteMerge\Totp\TotpException;
 
 #[CoversClass(AbstractTotp::class)]
-class AbstractTotpTest extends TestCase
+final class AbstractTotpTest extends TestCase
 {
     private Totp $totp;
 
