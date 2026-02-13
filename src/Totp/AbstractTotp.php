@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace RemoteMerge\Totp;
 
 use RemoteMerge\Message\MessageStore;
+use RemoteMerge\Utils\Base32;
 
 abstract class AbstractTotp
 {
@@ -24,9 +25,27 @@ abstract class AbstractTotp
     protected int $period = 30;
 
     /**
+     * The maximum allowed discrepancy value.
+     */
+    protected int $maxDiscrepancy = 10;
+
+    /**
      * The supported hash algorithms.
      */
     protected const SUPPORTED_ALGORITHMS = ['sha1', 'sha256', 'sha512'];
+
+    /**
+     * Initializes the TOTP instance with optional configuration options.
+     *
+     * @param array<string, mixed> $options An associative array of configuration options.
+     *        Supported options: 'max_discrepancy' (int).
+     */
+    public function __construct(array $options = [])
+    {
+        if (isset($options['max_discrepancy'])) {
+            $this->maxDiscrepancy = (int) $options['max_discrepancy'];
+        }
+    }
 
     /**
      * Validates the secret key.
@@ -49,6 +68,14 @@ abstract class AbstractTotp
         // Base32 validation: A-Z, 2-7, and optional padding
         if (preg_match('/^[A-Z2-7]+=*$/', $secret) !== 1) {
             throw new TotpException(MessageStore::get('validation.secret_characters'));
+        }
+
+        // Warn about weak secrets without throwing
+        $decoded = Base32::decodeUpper($secret);
+        $byteLength = strlen($decoded);
+
+        if ($byteLength < 20) {
+            error_log(MessageStore::get('security.weak_secret_log', $byteLength));
         }
     }
 
@@ -79,11 +106,11 @@ abstract class AbstractTotp
      * Packs the time slice into a binary string.
      *
      * @param int $timeSlice The time slice to pack.
-     * @return string The packed binary string (8 bytes, big-endian).
+     * @return string The packed binary string (8 bytes, big-endian unsigned 64-bit integer).
      */
     protected function packTimeSlice(int $timeSlice): string
     {
-        return str_pad(pack('N', $timeSlice), 8, "\0", STR_PAD_LEFT);
+        return pack('J', $timeSlice);
     }
 
     /**
