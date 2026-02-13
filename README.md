@@ -20,7 +20,7 @@
 | 4  | [Get Started](#get-started-in-minutes)  | Quick installation via Composer and simple usage examples.                  |
 | 5  | [Basic Usage](#basic-usage)             | Generate secrets, TOTP codes, verify codes, and create QR code URIs.        |
 | 6  | [Customization](#customization-options) | Change hash algorithms, code length, and time slice duration.               |
-| 7  | [Advanced Usage](#advanced-usage)       | Verify codes with discrepancy and generate QR code images.                  |
+| 7  | [Advanced Usage](#advanced-usage)       | Replay protection, secret auditing, discrepancy limits, and QR codes.       |
 | 8  | [Try with Docker](#try-with-docker)     | Test locally using Docker for quick setup.                                  |
 | 9  | [Try without Docker](#try-with-php)     | Use PHP's built-in server for lightweight local testing.                    |
 | 10 | [Getting Help](#getting-help)           | Report bugs, get integration help, or collaborate on projects.              |
@@ -52,6 +52,15 @@ Configurable time slice duration (e.g., **30 or 60 seconds**) to match security 
 
 ✅ **Discrepancy Verification**
 Allows **time slice discrepancy** when verifying TOTP codes, ensuring a smooth user experience. This is especially useful for handling clock drifts.
+
+✅ **Replay Attack Protection**
+The `verifyCodeOnce()` method prevents reuse of already-accepted codes by tracking the last accepted time slice, eliminating replay attack vectors.
+
+✅ **Secret Security Auditing**
+The `auditSecret()` method inspects a secret key and returns its decoded byte length, strength rating, and actionable warnings — without throwing exceptions.
+
+✅ **Discrepancy Bounds Enforcement**
+The discrepancy parameter is validated against a configurable upper bound (default: 10), preventing misconfigured or malicious values from widening the verification window indefinitely.
 
 ✅ **Easy Verification**
 Verifies TOTP codes with a **simple and intuitive API**, making integration straightforward.
@@ -270,6 +279,82 @@ $code = '123456';
 $isValid = $totp->verifyCode($secret, $code, 1);
 
 echo $isValid ? "✅ Code is valid!\n" : "❌ Code is invalid!\n";
+```
+
+### **Replay Attack Protection**
+
+Use `verifyCodeOnce()` to prevent a TOTP code from being accepted more than once. It returns the matched time slice on success (store this value and pass it back on the next login), or `null` if the code is invalid or has already been used:
+
+```php
+use RemoteMerge\Totp\TotpFactory;
+
+$totp = TotpFactory::create();
+
+$secret = 'JBSWY3DPEHPK3PXP';
+$code = '123456';
+
+// Load the last accepted time slice from persistent storage (e.g. database).
+// Use 0 on first login.
+$lastAcceptedSlice = (int) $user->getLastTotpSlice();
+
+$newSlice = $totp->verifyCodeOnce($secret, $code, $lastAcceptedSlice);
+
+if ($newSlice === null) {
+    echo "❌ Code is invalid or has already been used!\n";
+} else {
+    // Persist the new slice to block future reuse of this code.
+    $user->setLastTotpSlice($newSlice);
+    echo "✅ Code accepted!\n";
+}
+```
+
+### **Secret Security Audit**
+
+Use `auditSecret()` to inspect a secret key before storing or using it. The method never throws — all diagnostics are returned in the result array:
+
+```php
+use RemoteMerge\Totp\TotpFactory;
+
+$totp = TotpFactory::create();
+
+$secret = 'JBSWY3DPEHPK3PXP';
+
+$audit = $totp->auditSecret($secret);
+
+echo "Decoded length: {$audit['length_bytes']} bytes\n";
+echo "Strong secret: " . ($audit['is_strong'] ? 'Yes' : 'No') . "\n";
+
+foreach ($audit['warnings'] as $warning) {
+    echo "⚠️  Warning: $warning\n";
+}
+```
+
+**Output:**
+
+```text
+Decoded length: 10 bytes
+Strong secret: No
+⚠️  Warning: Secret is weak (10 bytes); recommend >= 20 bytes for adequate security.
+```
+
+### **Configuring the Maximum Discrepancy**
+
+By default the discrepancy parameter in `verifyCode()` and `verifyCodeOnce()` is capped at **10**. Pass `max_discrepancy` to the constructor to tighten or relax this limit:
+
+```php
+use RemoteMerge\Totp\Totp;
+
+// Restrict the maximum allowed discrepancy to 2 time slices
+$totp = new Totp(['max_discrepancy' => 2]);
+
+$secret = $totp->generateSecret();
+$code = $totp->getCode($secret);
+
+// discrepancy of 1 is within the limit — works normally
+$isValid = $totp->verifyCode($secret, $code, 1);
+
+// discrepancy of 3 exceeds the limit — throws TotpException
+$totp->verifyCode($secret, $code, 3);
 ```
 
 ### **Generate a QR Code Image**
