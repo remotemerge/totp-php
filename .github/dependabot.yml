@@ -6,28 +6,24 @@ version: 2
 updates:
 
   - package-ecosystem: "github-actions"
-    target-branch: "main"
     directory: "/.github/workflows/"
     schedule:
       interval: "weekly"
       day: "saturday"
 
   - package-ecosystem: "docker"
-    target-branch: "main"
     directory: "/.docker/"
     schedule:
       interval: "weekly"
       day: "saturday"
 
   - package-ecosystem: "docker-compose"
-    target-branch: "main"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "saturday"
 
   - package-ecosystem: "composer"
-    target-branch: "main"
     directory: "/"
     schedule:
       interval: "weekly"
