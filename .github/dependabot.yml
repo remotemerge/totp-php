@@ -9,35 +9,26 @@ updates:
     target-branch: "main"
     directory: "/.github/workflows/"
     schedule:
-      interval: "daily"
-    ignore:
-      - dependency-name: "*"
-        update-types: [ "version-update:semver-major" ]
+      interval: "weekly"
+      day: "saturday"
 
   - package-ecosystem: "docker"
     target-branch: "main"
     directory: "/.docker/"
     schedule:
-      interval: "daily"
-    ignore:
-      - dependency-name: "*"
-        update-types: [ "version-update:semver-major" ]
-      - dependency-name: "serversideup/php"
+      interval: "weekly"
+      day: "saturday"
 
   - package-ecosystem: "docker-compose"
     target-branch: "main"
     directory: "/"
     schedule:
-      interval: "daily"
-    ignore:
-      - dependency-name: "*"
-        update-types: [ "version-update:semver-major" ]
+      interval: "weekly"
+      day: "saturday"
 
   - package-ecosystem: "composer"
     target-branch: "main"
     directory: "/"
     schedule:
-      interval: "daily"
-    ignore:
-      - dependency-name: "*"
-        update-types: [ "version-update:semver-major" ]
+      interval: "weekly"
+      day: "saturday"
