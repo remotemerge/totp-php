@@ -24,6 +24,7 @@ return [
         'unsupported_algorithm' => 'Unsupported hash algorithm.',
         'invalid_digits' => 'Digits must be either 6 or 8.',
         'invalid_period' => 'Period must be a positive integer.',
+        'invalid_discrepancy' => 'Discrepancy must be between 0 and %d.',
     ],
 
     /**
@@ -31,5 +32,16 @@ return [
      */
     'encoding' => [
         'invalid_base32_char' => 'Invalid Base32 character: %s',
+    ],
+
+    /**
+     * Security warning messages.
+     */
+    'security' => [
+        'weak_secret_log' => 'TOTP Security Warning: Weak secret detected (%d bytes, recommend >= 20 bytes)',
+        'audit_secret_empty' => 'Secret is empty (0 bytes).',
+        'audit_invalid_base32' => 'Secret is not valid Base32 format.',
+        'audit_zero_bytes' => 'Secret decodes to 0 bytes.',
+        'audit_weak_secret' => 'Secret is weak (%d bytes); recommend >= 20 bytes for adequate security.',
     ],
 ];

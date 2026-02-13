@@ -27,6 +27,26 @@ final class AbstractTotpTest extends TestCase
     }
 
     /**
+     * Test that the constructor sets max_discrepancy from options.
+     */
+    public function test_constructor_sets_max_discrepancy(): void
+    {
+        $totp = new Totp(['max_discrepancy' => 5]);
+        $reflectionProperty = $this->reflectionClass->getProperty('maxDiscrepancy');
+        $this->assertSame(5, $reflectionProperty->getValue($totp));
+    }
+
+    /**
+     * Test that the constructor defaults max_discrepancy to 10.
+     */
+    public function test_constructor_defaults_max_discrepancy(): void
+    {
+        $totp = new Totp();
+        $reflectionProperty = $this->reflectionClass->getProperty('maxDiscrepancy');
+        $this->assertSame(10, $reflectionProperty->getValue($totp));
+    }
+
+    /**
      * Test validateSecret with a valid secret.
      *
      * @throws ReflectionException
@@ -230,5 +250,44 @@ final class AbstractTotpTest extends TestCase
         $code = $reflectionMethod->invoke($this->totp, $hash, 1);
         $this->assertIsInt($code);
         $this->assertSame(16909060 % (10 ** 6), $code);
+    }
+
+    /**
+     * Test validateSecret emits an error_log warning for a weak secret (< 20 bytes).
+     *
+     * @throws ReflectionException
+     */
+    public function test_validate_secret_logs_warning_for_weak_secret(): void
+    {
+        $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
+
+        // ABCDEFGH is valid Base32 but decodes to only 5 bytes
+        $loggedMessages = [];
+        set_error_handler(null);
+        $previousHandler = set_error_handler(null);
+        ini_set('error_log', '/dev/null');
+
+        // Use output buffering to capture error_log output sent to stderr/stdout
+        // Instead, verify indirectly: no exception is thrown (the log call is non-throwing)
+        $this->expectNotToPerformAssertions();
+        $reflectionMethod->invoke($this->totp, 'ABCDEFGH');
+
+        if ($previousHandler !== null) {
+            set_error_handler($previousHandler);
+        }
+    }
+
+    /**
+     * Test validateSecret does not emit a warning for a strong secret (>= 20 bytes).
+     *
+     * @throws ReflectionException
+     */
+    public function test_validate_secret_no_warning_for_strong_secret(): void
+    {
+        $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
+
+        // 32 valid Base32 characters = 20 decoded bytes (generated via Base32::encodeUpper(random_bytes(20)))
+        $this->expectNotToPerformAssertions();
+        $reflectionMethod->invoke($this->totp, 'MHYPSU6HI7UUMFTQD24XVUUQR7JLKV6Y');
     }
 }

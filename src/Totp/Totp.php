@@ -116,11 +116,15 @@ final class Totp extends AbstractTotp implements TotpInterface
      * @param string $code The code to verify.
      * @param int $discrepancy The allowed discrepancy in the code. Defaults to 1.
      * @param int|null $timeSlice The time slice to verify the code for. Defaults to the current time slice.
-     * @throws TotpException If the secret key is invalid.
+     * @throws TotpException If the secret key is invalid or discrepancy is out of range.
      * @return bool True if the code is valid, false otherwise.
      */
     public function verifyCode(string $secret, string $code, int $discrepancy = 1, ?int $timeSlice = null): bool
     {
+        if ($discrepancy < 0 || $discrepancy > $this->maxDiscrepancy) {
+            throw new TotpException(MessageStore::get('configuration.invalid_discrepancy', $this->maxDiscrepancy));
+        }
+
         $this->validateSecret($secret);
         $this->validateCode($code);
 
@@ -133,6 +137,96 @@ final class Totp extends AbstractTotp implements TotpInterface
         }
 
         return false;
+    }
+
+    /**
+     * Verifies the TOTP code while preventing replay attacks.
+     *
+     * Skips any time slices at or below the last accepted slice, ensuring a
+     * previously used code cannot be reused.
+     *
+     * @param string $secret The secret key in Base32 format.
+     * @param string $code The code to verify.
+     * @param int $lastAcceptedSlice The last time slice that was successfully accepted.
+     * @param int $discrepancy The allowed discrepancy in time slices. Defaults to 1.
+     * @throws TotpException If the secret key is invalid or discrepancy is out of range.
+     * @return int|null The matched time slice if valid, or null if invalid or replay detected.
+     */
+    public function verifyCodeOnce(string $secret, string $code, int $lastAcceptedSlice, int $discrepancy = 1): ?int
+    {
+        if ($discrepancy < 0 || $discrepancy > $this->maxDiscrepancy) {
+            throw new TotpException(MessageStore::get('configuration.invalid_discrepancy', $this->maxDiscrepancy));
+        }
+
+        $this->validateSecret($secret);
+        $this->validateCode($code);
+
+        $currentSlice = $this->getCurrentTimeSlice();
+
+        for ($offset = -$discrepancy; $offset <= $discrepancy; ++$offset) {
+            $candidateSlice = $currentSlice + $offset;
+
+            if ($candidateSlice <= $lastAcceptedSlice) {
+                continue;
+            }
+
+            if (hash_equals($this->getCode($secret, $candidateSlice), $code)) {
+                return $candidateSlice;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Audits a secret key and returns diagnostic security information.
+     *
+     * This method never throws exceptions; all issues are reported via the
+     * returned array so callers can handle them gracefully.
+     *
+     * @param string $secret The secret key in Base32 format to audit.
+     * @return array{length_bytes: int, is_strong: bool, warnings: list<string>} Diagnostic information.
+     */
+    public function auditSecret(string $secret): array
+    {
+        $warnings = [];
+        $lengthBytes = 0;
+
+        if ($secret === '') {
+            $warnings[] = MessageStore::get('security.audit_secret_empty');
+
+            return [
+                'length_bytes' => 0,
+                'is_strong' => false,
+                'warnings' => $warnings,
+            ];
+        }
+
+        // Validate a Base32 format without throwing
+        if (strlen($secret) % 8 !== 0 || preg_match('/^[A-Z2-7]+=*$/', $secret) !== 1) {
+            $warnings[] = MessageStore::get('security.audit_invalid_base32');
+
+            return [
+                'length_bytes' => 0,
+                'is_strong' => false,
+                'warnings' => $warnings,
+            ];
+        }
+
+        $decoded = Base32::decodeUpper($secret);
+        $lengthBytes = strlen($decoded);
+
+        if ($lengthBytes === 0) {
+            $warnings[] = MessageStore::get('security.audit_zero_bytes');
+        } elseif ($lengthBytes < 20) {
+            $warnings[] = MessageStore::get('security.audit_weak_secret', $lengthBytes);
+        }
+
+        return [
+            'length_bytes' => $lengthBytes,
+            'is_strong' => $lengthBytes >= 20,
+            'warnings' => $warnings,
+        ];
     }
 
     /**
