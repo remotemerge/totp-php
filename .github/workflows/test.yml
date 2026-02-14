@@ -1,23 +1,42 @@
 name: Test
 
 on:
-  # Run the workflow on pull requests
+  # Run on pull requests targeting the main branch
   pull_request:
     branches:
       - main
-  # Run the workflow on pushes to the main branch
+
+  # Run on pushes to the main branch
   push:
     branches:
       - main
 
+# Cancel in-progress runs when new commits are pushed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Minimum required permissions for security
+permissions:
+  contents: read
+
 jobs:
   test:
-    # Define the matrix for OS and PHP versions
+    # Skip workflow for Dependabot PRs
+    if: github.actor != 'dependabot[bot]'
+
+    # Test matrix across multiple OS and PHP versions
     runs-on: ${{ matrix.os }}
+
+    # Prevent hanging jobs
+    timeout-minutes: 15
+
     strategy:
+      # Run all matrix combinations to completion
+      fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-2025, macos-15]
-        php: ["8.1", "8.2", "8.3", "8.4", "8.5"]
+        os: [ ubuntu-24.04, windows-2025, macos-15 ]
+        php: [ "8.1", "8.2", "8.3", "8.4", "8.5" ]
 
     env:
       OS: ${{ matrix.os }}
@@ -27,7 +46,7 @@ jobs:
       - name: "Checkout code"
         uses: actions/checkout@v6
         with:
-          # Fetch all history for all tags and branches
+          # Required for SonarQube analysis
           fetch-depth: 0
 
       - name: "Set Xdebug coverage"
