@@ -20,11 +20,13 @@ final class Totp extends AbstractTotp implements TotpInterface
     public function configure(array $options): void
     {
         if (isset($options['algorithm'])) {
-            if (!in_array($options['algorithm'], self::SUPPORTED_ALGORITHMS, true)) {
+            $selectedAlgorithm = strtolower((string)$options['algorithm']);
+
+            if (!in_array($selectedAlgorithm, self::SUPPORTED_ALGORITHMS, true)) {
                 throw new TotpException(MessageStore::get('configuration.unsupported_algorithm'));
             }
 
-            $this->algorithm = $options['algorithm'];
+            $this->algorithm = $selectedAlgorithm;
         }
 
         if (isset($options['digits'])) {

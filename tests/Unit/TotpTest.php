@@ -325,4 +325,14 @@ final class TotpTest extends TestCase
         $this->assertCount(1, $result['warnings']);
         $this->assertStringContainsString('0 bytes', $result['warnings'][0]);
     }
+
+    /**
+     * Test configure handles uppercase algorithm names by normalizing them.
+     */
+    public function test_configure_normalizes_uppercase_algorithm(): void
+    {
+        $totp = new Totp();
+        $totp->configure(['algorithm' => 'SHA256']);
+        $this->assertSame('sha256', $totp->getAlgorithm());
+    }
 }
