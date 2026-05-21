@@ -100,6 +100,20 @@ final class TotpTest extends TestCase
     }
 
     /**
+     * Test verifyCode keeps matching a future slice inside the discrepancy window.
+     * @throws TotpException
+     */
+    public function test_verify_code_matches_future_slice_with_discrepancy(): void
+    {
+        $totp = new Totp();
+        $secret = 'JBSWY3DPEHPK3PXP';
+        $currentSlice = (int) floor(time() / 30);
+        $code = $totp->getCode($secret, $currentSlice + 1);
+
+        $this->assertTrue($totp->verifyCode($secret, $code, 1, $currentSlice));
+    }
+
+    /**
      * Test generating a TOTP URI.
      * @throws TotpException
      */
@@ -239,6 +253,22 @@ final class TotpTest extends TestCase
         $result = $totp->verifyCodeOnce($secret, $code, $currentSlice);
 
         $this->assertNull($result);
+    }
+
+    /**
+     * Test verifyCodeOnce still returns the future matched slice after replay filtering.
+     * @throws TotpException
+     */
+    public function test_verify_code_once_returns_future_slice_after_replay_filter(): void
+    {
+        $totp = new Totp();
+        $secret = 'JBSWY3DPEHPK3PXP';
+        $currentSlice = (int) floor(time() / 30);
+        $code = $totp->getCode($secret, $currentSlice + 1);
+
+        $result = $totp->verifyCodeOnce($secret, $code, $currentSlice);
+
+        $this->assertSame($currentSlice + 1, $result);
     }
 
     /**
