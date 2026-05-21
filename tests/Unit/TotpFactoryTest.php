@@ -36,4 +36,16 @@ final class TotpFactoryTest extends TestCase
         $this->assertSame(8, $totp->getDigits());
         $this->assertSame(60, $totp->getPeriod());
     }
+
+    /**
+     * Test creating a TOTP instance with a custom maximum discrepancy.
+     */
+    public function test_create_respects_max_discrepancy(): void
+    {
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('Discrepancy must be between 0 and 3.');
+
+        $totp = TotpFactory::create(['max_discrepancy' => 3]);
+        $totp->verifyCode('JBSWY3DPEHPK3PXP', '123456', 4);
+    }
 }
