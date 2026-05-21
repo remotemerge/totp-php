@@ -260,9 +260,6 @@ final class AbstractTotpTest extends TestCase
     public function test_validate_secret_logs_warning_for_weak_secret(): void
     {
         $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
-
-        // ABCDEFGH is valid Base32 but decodes to only 5 bytes
-        $loggedMessages = [];
         set_error_handler(null);
         $previousHandler = set_error_handler(null);
         ini_set('error_log', '/dev/null');
