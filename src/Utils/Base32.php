@@ -18,8 +18,8 @@ final class Base32
      * Pre-computed decode lookup table for O(1) character mapping.
      */
     private const DECODE_MAP = [
-        'A' => 0,  'B' => 1,  'C' => 2,  'D' => 3,  'E' => 4,  'F' => 5,  'G' => 6,  'H' => 7,
-        'I' => 8,  'J' => 9,  'K' => 10, 'L' => 11, 'M' => 12, 'N' => 13, 'O' => 14, 'P' => 15,
+        'A' => 0, 'B' => 1, 'C' => 2, 'D' => 3, 'E' => 4, 'F' => 5, 'G' => 6, 'H' => 7,
+        'I' => 8, 'J' => 9, 'K' => 10, 'L' => 11, 'M' => 12, 'N' => 13, 'O' => 14, 'P' => 15,
         'Q' => 16, 'R' => 17, 'S' => 18, 'T' => 19, 'U' => 20, 'V' => 21, 'W' => 22, 'X' => 23,
         'Y' => 24, 'Z' => 25, '2' => 26, '3' => 27, '4' => 28, '5' => 29, '6' => 30, '7' => 31,
     ];
@@ -38,6 +38,9 @@ final class Base32
 
     /** Standard Base32 block size for padding calculations */
     private const BASE32_BLOCK_SIZE = 8;
+
+    /** Valid padding lengths per RFC 4648 (0, 1, 3, 4, or 6 '=' characters) */
+    private const BASE32_VALID_PADDING = [0, 1, 3, 4, 6];
 
     /**
      * Encodes binary data to Base32 using optimized bit manipulation.
@@ -129,10 +132,20 @@ final class Base32
      */
     public static function isValidUpper(string $data): bool
     {
+        // Encoded output is always a multiple of 8 characters
         if (strlen($data) % self::BASE32_BLOCK_SIZE !== 0) {
             return false;
         }
 
-        return preg_match('/^(?:[A-Z2-7]{8})*(?:[A-Z2-7]{2}======|[A-Z2-7]{4}====|[A-Z2-7]{5}===|[A-Z2-7]{7}=)?$/', $data) === 1;
+        $unpadded = rtrim($data, '=');
+        $paddingCount = strlen($data) - strlen($unpadded);
+
+        // Check padding chars are valid per RFC 4648 §6
+        if (!in_array($paddingCount, self::BASE32_VALID_PADDING, true)) {
+            return false;
+        }
+
+        // Validate against the Base32 alphabet
+        return preg_match('/^[A-Z2-7]*$/', $unpadded) === 1;
     }
 }
