@@ -18,9 +18,8 @@ document.getElementById('enable2FA').addEventListener('click', async () => {
   const data = await response.json();
   secretKey = data.secret;
 
-  // Generate QR code URI
-  const qrUri = `otpauth://totp/RemoteMerge:user@example.com?secret=${secretKey}&issuer=RemoteMerge`;
-  await generateQRImage(qrUri);
+  // Generate QR code from backend URI
+  await generateQRImage(data.uri);
 
   // Show the QR code section
   document.getElementById('qrSection').classList.remove('hidden');

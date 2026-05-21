@@ -13,7 +13,11 @@ header('Content-Type: application/json');
 try {
     // Generate Secret Key
     $totp = TotpFactory::create();
-    echo json_encode(['secret' => $totp->generateSecret()], JSON_THROW_ON_ERROR);
+    $secret = $totp->generateSecret();
+    echo json_encode([
+        'secret' => $secret,
+        'uri' => $totp->generateUri($secret, 'user@example.com', 'RemoteMerge'),
+    ], JSON_THROW_ON_ERROR);
     exit;
 } catch (TotpException $totpException) {
     http_response_code(500);
