@@ -8,7 +8,7 @@
 [![Downloads](https://img.shields.io/packagist/dt/remotemerge/totp-php.svg?style=flat&label=downloads)](https://packagist.org/packages/remotemerge/totp-php)
 [![License](https://img.shields.io/github/license/remotemerge/totp-php)](https://github.com/remotemerge/totp-php?tab=MIT-1-ov-file)
 
-![TOTP PHP Features](public/img/features.png)
+![TOTP PHP Features](public/img/features-v1.png)
 
 ## **Table of Contents**
 
