@@ -14,7 +14,7 @@ try {
     // Generate Secret Key
     $totp = TotpFactory::create();
     $data = json_decode(file_get_contents('php://input'), true, 512, JSON_THROW_ON_ERROR);
-    echo json_encode(['valid' => $totp->verifyCode($data['secret'], $data['code'])], JSON_THROW_ON_ERROR);
+    echo json_encode(['valid' => $totp->verifyCode($data['secret'], $data['code'], 0)], JSON_THROW_ON_ERROR);
     exit;
 } catch (TotpException $totpException) {
     http_response_code(500);

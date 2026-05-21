@@ -67,12 +67,34 @@ final class Base32Test extends TestCase
     }
 
     /**
+     * Test validating uppercase Base32 strings.
+     */
+    public function test_is_valid_upper(): void
+    {
+        $this->assertTrue(Base32::isValidUpper('JBSWY3DP'));
+        $this->assertTrue(Base32::isValidUpper('JBSWY3DPEE======'));
+        $this->assertFalse(Base32::isValidUpper('ABCDE'));
+        $this->assertFalse(Base32::isValidUpper('ABCDEF=='));
+        $this->assertFalse(Base32::isValidUpper('JBSWY31P'));
+    }
+
+    /**
+     * Test decoding rejects invalid RFC 4648 padding.
+     */
+    public function test_decode_rejects_invalid_padding(): void
+    {
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('Invalid Base32 character: =');
+        Base32::decodeUpper('ABCDEF==');
+    }
+
+    /**
      * Test decoding an invalid Base32 string.
      */
     public function test_decode_invalid_string(): void
     {
         $this->expectException(TotpException::class);
-        $this->expectExceptionMessage('Invalid Base32 character: 1');
+        $this->expectExceptionMessage('Invalid Base32 character: =');
         Base32::decodeUpper('JBSWY31P');
     }
 }

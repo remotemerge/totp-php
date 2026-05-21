@@ -156,19 +156,6 @@ final class AbstractTotpTest extends TestCase
     }
 
     /**
-     * Test validateSecret with multiple padding characters.
-     *
-     * @throws ReflectionException
-     */
-    public function test_validate_secret_with_multiple_padding(): void
-    {
-        $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
-
-        $this->expectNotToPerformAssertions();
-        $reflectionMethod->invoke($this->totp, 'ABCDEF=='); // Valid Base32 with multiple padding
-    }
-
-    /**
      * Test validateCode with a valid code.
      *
      * @throws ReflectionException
@@ -260,9 +247,6 @@ final class AbstractTotpTest extends TestCase
     public function test_validate_secret_logs_warning_for_weak_secret(): void
     {
         $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
-
-        // ABCDEFGH is valid Base32 but decodes to only 5 bytes
-        $loggedMessages = [];
         set_error_handler(null);
         $previousHandler = set_error_handler(null);
         ini_set('error_log', '/dev/null');

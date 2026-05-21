@@ -41,7 +41,6 @@ return [
         'weak_secret_log' => 'TOTP Security Warning: Weak secret detected (%d bytes, recommend >= 20 bytes)',
         'audit_secret_empty' => 'Secret is empty (0 bytes).',
         'audit_invalid_base32' => 'Secret is not valid Base32 format.',
-        'audit_zero_bytes' => 'Secret decodes to 0 bytes.',
         'audit_weak_secret' => 'Secret is weak (%d bytes); recommend >= 20 bytes for adequate security.',
     ],
 ];
