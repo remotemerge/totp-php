@@ -109,14 +109,7 @@ final class Base32
 
         // Process each character using a pre-computed lookup table
         for ($i = 0; $i < $length; $i++) {
-            $char = $data[$i];
-
-            // Check if character is valid Base32 character
-            if (!isset(self::DECODE_MAP[$char])) {
-                throw new TotpException(MessageStore::get('encoding.invalid_base32_char', $char));
-            }
-
-            $buffer = ($buffer << self::BITS_PER_BASE32) | self::DECODE_MAP[$char];
+            $buffer = ($buffer << self::BITS_PER_BASE32) | self::DECODE_MAP[$data[$i]];
             $bufferLength += self::BITS_PER_BASE32;
 
             // Extract complete bytes
