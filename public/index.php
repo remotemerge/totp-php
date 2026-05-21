@@ -50,6 +50,6 @@
         </div>
     </section>
 </div>
-<script src="js/app.js"></script>
+<script type="module" src="js/app.js"></script>
 </body>
 </html>

@@ -1,5 +1,15 @@
+import QRCode from 'https://cdn.jsdelivr.net/npm/qrcode@1.5/+esm';
+
 // JavaScript to interact with the 2FA flow
 let secretKey = '';
+
+const generateQRImage = async (text) => {
+  document.getElementById('qrImage').src = await QRCode.toDataURL(text, {
+    errorCorrectionLevel: 'H',
+    width: 256,
+    margin: 2,
+  });
+};
 
 // Enable 2FA Button
 document.getElementById('enable2FA').addEventListener('click', async () => {
@@ -9,8 +19,8 @@ document.getElementById('enable2FA').addEventListener('click', async () => {
   secretKey = data.secret;
 
   // Generate QR code URI
-  const qrUri = `otpauth://totp/Demo:user@example.com?secret=${secretKey}&issuer=Demo`;
-  document.getElementById('qrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrUri)}`;
+  const qrUri = `otpauth://totp/RemoteMerge:user@example.com?secret=${secretKey}&issuer=RemoteMerge`;
+  await generateQRImage(qrUri);
 
   // Show the QR code section
   document.getElementById('qrSection').classList.remove('hidden');
