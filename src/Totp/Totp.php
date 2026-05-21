@@ -220,7 +220,7 @@ final class Totp extends AbstractTotp implements TotpInterface
         }
 
         // Validate a Base32 format without throwing
-        if (strlen($secret) % 8 !== 0 || preg_match('/^[A-Z2-7]+=*$/', $secret) !== 1) {
+        if (!Base32::isValidUpper($secret)) {
             $warnings[] = MessageStore::get('security.audit_invalid_base32');
 
             return [

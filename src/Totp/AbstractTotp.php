@@ -65,8 +65,8 @@ abstract class AbstractTotp
             throw new TotpException(MessageStore::get('validation.secret_length'));
         }
 
-        // Base32 validation: A-Z, 2-7, and optional padding
-        if (preg_match('/^[A-Z2-7]+=*$/', $secret) !== 1) {
+        // Base32 validation: A-Z, 2-7, and RFC 4648 padding
+        if (!Base32::isValidUpper($secret)) {
             throw new TotpException(MessageStore::get('validation.secret_characters'));
         }
 

@@ -95,6 +95,11 @@ final class Base32
             return '';
         }
 
+        // Validate input
+        if (!self::isValidUpper($data)) {
+            throw new TotpException(MessageStore::get('encoding.invalid_base32_char', '='));
+        }
+
         // Remove padding
         $data = rtrim($data, '=');
         $length = strlen($data);
@@ -122,5 +127,19 @@ final class Base32
         }
 
         return $output;
+    }
+
+    /**
+     * Checks whether a string is valid uppercase RFC 4648 Base32.
+     *
+     * @param string $data The Base32 encoded string.
+     */
+    public static function isValidUpper(string $data): bool
+    {
+        if (strlen($data) % self::BASE32_BLOCK_SIZE !== 0) {
+            return false;
+        }
+
+        return preg_match('/^(?:[A-Z2-7]{8})*(?:[A-Z2-7]{2}======|[A-Z2-7]{4}====|[A-Z2-7]{5}===|[A-Z2-7]{7}=)?$/', $data) === 1;
     }
 }
