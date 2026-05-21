@@ -42,7 +42,7 @@ Generates cryptographically secure secret keys for TOTP, ensuring maximum securi
 Supports **SHA1, SHA256, and SHA512** for HMAC hashing, providing flexibility and compatibility with all major authenticator apps.
 
 ✅ **QR Code Integration**
-Generates **QR codes** for seamless setup in authenticator apps like Google Authenticator, Microsoft Authenticator, Authy, and more.
+Generates standards-compliant **otpauth URIs** for QR code setup in authenticator apps like Google Authenticator, Microsoft Authenticator, Authy, and more.
 
 ✅ **Customizable Code Length**
 Generates TOTP codes with **6 or 8 digits**, configurable based on application requirements.
@@ -92,7 +92,7 @@ TOTP PHP is built to **universal standards** and works seamlessly with **all maj
 ### **Standards Compliance**
 
 🔒 **RFC-Compliant Implementation**
-TOTP PHP fully adheres to the **IETF otpauth URI specification** and the **Key URI Format standard**, ensuring maximum interoperability with any RFC-compliant two-factor authentication tool. The library works reliably across platforms, devices, and authenticator applications without vendor lock-in.
+TOTP PHP follows **RFC 6238** for time-based one-time passwords, validates secrets as uppercase **RFC 4648 Base32** with valid padding, and generates **Key URI Format** compatible `otpauth://` URIs. The test suite includes the RFC 6238 Appendix B vectors for SHA1, SHA256, and SHA512.
 
 ---
 
@@ -130,8 +130,10 @@ echo "Generated Secret Key: $secret\n";
 **Output:**
 
 ```text
-Generated Secret Key: JBSWY3DPEHPK3PXP
+Generated Secret Key: MHYPSU6HI7UUMFTQD24XVUUQR7JLKV6Y
 ```
+
+`generateSecret()` creates a 20-byte random secret encoded as uppercase Base32. When importing secrets from another system, use `auditSecret()` to inspect decoded length and formatting before storing them.
 
 ### **Generate a TOTP Code**
 
@@ -141,8 +143,8 @@ use RemoteMerge\Totp\TotpFactory;
 // Create a new TOTP instance
 $totp = TotpFactory::create();
 
-// Example secret key
-$secret = 'JBSWY3DPEHPK3PXP';
+// Example 20-byte Base32 secret
+$secret = 'MHYPSU6HI7UUMFTQD24XVUUQR7JLKV6Y';
 
 // Generate a TOTP code
 $code = $totp->getCode($secret);
@@ -164,8 +166,8 @@ use RemoteMerge\Totp\TotpFactory;
 // Create a new TOTP instance
 $totp = TotpFactory::create();
 
-// Example secret key and code
-$secret = 'JBSWY3DPEHPK3PXP';
+// Example 20-byte Base32 secret and code
+$secret = 'MHYPSU6HI7UUMFTQD24XVUUQR7JLKV6Y';
 $code = '123456';
 
 // Verify the code
@@ -188,8 +190,8 @@ use RemoteMerge\Totp\TotpFactory;
 // Create a new TOTP instance
 $totp = TotpFactory::create();
 
-// Example secret key and user information
-$secret = 'JBSWY3DPEHPK3PXP';
+// Example 20-byte Base32 secret and user information
+$secret = 'MHYPSU6HI7UUMFTQD24XVUUQR7JLKV6Y';
 $uri = $totp->generateUri($secret, 'user@example.com', 'YourApp');
 
 echo "QR Code URI: $uri\n";
@@ -198,7 +200,7 @@ echo "QR Code URI: $uri\n";
 **Output:**
 
 ```text
-QR Code URI: otpauth://totp/YourApp:user%40example.com?secret=JBSWY3DPEHPK3PXP&issuer=YourApp&algorithm=SHA1&digits=6&period=30
+QR Code URI: otpauth://totp/YourApp:user%40example.com?secret=MHYPSU6HI7UUMFTQD24XVUUQR7JLKV6Y&issuer=YourApp&algorithm=SHA1&digits=6&period=30
 ```
 
 ---
@@ -272,7 +274,7 @@ use RemoteMerge\Totp\TotpFactory;
 
 $totp = TotpFactory::create();
 
-$secret = 'JBSWY3DPEHPK3PXP';
+$secret = 'MHYPSU6HI7UUMFTQD24XVUUQR7JLKV6Y';
 $code = '123456';
 
 // Allow discrepancy of 1 time slice
@@ -290,7 +292,7 @@ use RemoteMerge\Totp\TotpFactory;
 
 $totp = TotpFactory::create();
 
-$secret = 'JBSWY3DPEHPK3PXP';
+$secret = 'MHYPSU6HI7UUMFTQD24XVUUQR7JLKV6Y';
 $code = '123456';
 
 // Load the last accepted time slice from persistent storage (e.g. database).
@@ -339,13 +341,13 @@ Strong secret: No
 
 ### **Configuring the Maximum Discrepancy**
 
-By default the discrepancy parameter in `verifyCode()` and `verifyCodeOnce()` is capped at **10**. Pass `max_discrepancy` to the constructor to tighten or relax this limit:
+By default the discrepancy parameter in `verifyCode()` and `verifyCodeOnce()` is capped at **10**. Pass `max_discrepancy` when creating the instance to tighten or relax this limit:
 
 ```php
-use RemoteMerge\Totp\Totp;
+use RemoteMerge\Totp\TotpFactory;
 
 // Restrict the maximum allowed discrepancy to 2 time slices
-$totp = new Totp(['max_discrepancy' => 2]);
+$totp = TotpFactory::create(['max_discrepancy' => 2]);
 
 $secret = $totp->generateSecret();
 $code = $totp->getCode($secret);
@@ -359,19 +361,38 @@ $totp->verifyCode($secret, $code, 3);
 
 ### **Generate a QR Code Image**
 
-Use the QR code URI to generate a QR code image:
+Generate the `otpauth://` URI on the backend, then render the QR image locally in the browser. Avoid sending TOTP setup URIs to third-party QR image APIs because the URI contains the user's secret.
 
 ```php
+// secret.php
 use RemoteMerge\Totp\TotpFactory;
 
 $totp = TotpFactory::create();
 
-$secret = 'JBSWY3DPEHPK3PXP';
+$secret = $totp->generateSecret();
 $uri = $totp->generateUri($secret, 'user@example.com', 'YourApp');
 
-$qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" . urlencode($uri);
+echo json_encode([
+    'secret' => $secret,
+    'uri' => $uri,
+], JSON_THROW_ON_ERROR);
+```
 
-echo "QR Code Image URL: $qrCodeUrl\n";
+```html
+<img id="qrImage" src="" alt="Authenticator QR code">
+
+<script type="module">
+  import QRCode from 'https://cdn.jsdelivr.net/npm/qrcode@1.5/+esm';
+
+  const response = await fetch('/secret.php');
+  const data = await response.json();
+
+  document.getElementById('qrImage').src = await QRCode.toDataURL(data.uri, {
+    errorCorrectionLevel: 'H',
+    width: 256,
+    margin: 2,
+  });
+</script>
 ```
 
 ---
