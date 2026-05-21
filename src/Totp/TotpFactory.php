@@ -17,10 +17,7 @@ final class TotpFactory
     public static function create(array $options = []): TotpInterface
     {
         $totp = new Totp($options);
-
-        if ($options !== []) {
-            $totp->configure($options);
-        }
+        $totp->configure($options);
 
         return $totp;
     }
