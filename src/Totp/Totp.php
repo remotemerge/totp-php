@@ -20,7 +20,7 @@ final class Totp extends AbstractTotp implements TotpInterface
     public function configure(array $options): void
     {
         if (isset($options['algorithm'])) {
-            $selectedAlgorithm = strtolower((string)$options['algorithm']);
+            $selectedAlgorithm = strtolower((string) $options['algorithm']);
 
             if (!in_array($selectedAlgorithm, self::SUPPORTED_ALGORITHMS, true)) {
                 throw new TotpException(MessageStore::get('configuration.unsupported_algorithm'));
@@ -101,6 +101,19 @@ final class Totp extends AbstractTotp implements TotpInterface
 
         $timeSlice ??= $this->getCurrentTimeSlice();
         $decodedSecret = Base32::decodeUpper($secret);
+
+        return $this->getCodeFromDecodedSecret($decodedSecret, $timeSlice);
+    }
+
+    /**
+     * Gets the TOTP code for an already decoded secret.
+     *
+     * @param string $decodedSecret The decoded binary secret key.
+     * @param int $timeSlice The time slice to generate the code for.
+     * @return string The generated TOTP code.
+     */
+    private function getCodeFromDecodedSecret(string $decodedSecret, int $timeSlice): string
+    {
         $time = $this->packTimeSlice($timeSlice);
 
         $hash = hash_hmac($this->algorithm, $time, $decodedSecret, true);
@@ -131,9 +144,10 @@ final class Totp extends AbstractTotp implements TotpInterface
         $this->validateCode($code);
 
         $currentSlice = $timeSlice ?? $this->getCurrentTimeSlice();
+        $decodedSecret = Base32::decodeUpper($secret);
 
         for ($offset = -$discrepancy; $offset <= $discrepancy; ++$offset) {
-            if (hash_equals($this->getCode($secret, $currentSlice + $offset), $code)) {
+            if (hash_equals($this->getCodeFromDecodedSecret($decodedSecret, $currentSlice + $offset), $code)) {
                 return true;
             }
         }
@@ -164,6 +178,7 @@ final class Totp extends AbstractTotp implements TotpInterface
         $this->validateCode($code);
 
         $currentSlice = $this->getCurrentTimeSlice();
+        $decodedSecret = Base32::decodeUpper($secret);
 
         for ($offset = -$discrepancy; $offset <= $discrepancy; ++$offset) {
             $candidateSlice = $currentSlice + $offset;
@@ -172,7 +187,7 @@ final class Totp extends AbstractTotp implements TotpInterface
                 continue;
             }
 
-            if (hash_equals($this->getCode($secret, $candidateSlice), $code)) {
+            if (hash_equals($this->getCodeFromDecodedSecret($decodedSecret, $candidateSlice), $code)) {
                 return $candidateSlice;
             }
         }
