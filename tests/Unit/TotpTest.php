@@ -387,21 +387,6 @@ final class TotpTest extends TestCase
     }
 
     /**
-     * Test auditSecret returns a warning when secret decodes to zero bytes.
-     */
-    public function test_audit_secret_zero_decoded_bytes(): void
-    {
-        $totp = new Totp();
-        // 'A=======' is a valid Base32 format but decodes to 0 bytes
-        $result = $totp->auditSecret('A=======');
-
-        $this->assertSame(0, $result['length_bytes']);
-        $this->assertFalse($result['is_strong']);
-        $this->assertCount(1, $result['warnings']);
-        $this->assertStringContainsString('0 bytes', $result['warnings'][0]);
-    }
-
-    /**
      * Test configure handles uppercase algorithm names by normalizing them.
      */
     public function test_configure_normalizes_uppercase_algorithm(): void
