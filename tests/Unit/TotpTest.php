@@ -65,6 +65,51 @@ final class TotpTest extends TestCase
     }
 
     /**
+     * Test RFC 6238 Appendix B vectors for SHA1, SHA256, and SHA512.
+     * @throws TotpException
+     */
+    public function test_rfc_6238_appendix_b_vectors(): void
+    {
+        $secrets = [
+            'sha1' => 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ',
+            'sha256' => 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZA====',
+            'sha512' => 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGEZDGNA=',
+        ];
+
+        $vectors = [
+            [59, 'sha1', '94287082'],
+            [59, 'sha256', '46119246'],
+            [59, 'sha512', '90693936'],
+            [1111111109, 'sha1', '07081804'],
+            [1111111109, 'sha256', '68084774'],
+            [1111111109, 'sha512', '25091201'],
+            [1111111111, 'sha1', '14050471'],
+            [1111111111, 'sha256', '67062674'],
+            [1111111111, 'sha512', '99943326'],
+            [1234567890, 'sha1', '89005924'],
+            [1234567890, 'sha256', '91819424'],
+            [1234567890, 'sha512', '93441116'],
+            [2000000000, 'sha1', '69279037'],
+            [2000000000, 'sha256', '90698825'],
+            [2000000000, 'sha512', '38618901'],
+            [20000000000, 'sha1', '65353130'],
+            [20000000000, 'sha256', '77737706'],
+            [20000000000, 'sha512', '47863826'],
+        ];
+
+        foreach ($vectors as [$time, $algorithm, $expectedCode]) {
+            $totp = new Totp();
+            $totp->configure(['algorithm' => $algorithm, 'digits' => 8]);
+
+            $this->assertSame(
+                $expectedCode,
+                $totp->getCode($secrets[$algorithm], intdiv($time, 30)),
+                sprintf('Failed RFC 6238 vector for %s at time %d.', $algorithm, $time),
+            );
+        }
+    }
+
+    /**
      * Test verifying a valid TOTP code.
      * @throws TotpException
      */
