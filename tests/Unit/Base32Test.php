@@ -73,6 +73,7 @@ final class Base32Test extends TestCase
     {
         $this->assertTrue(Base32::isValidUpper('JBSWY3DP'));
         $this->assertTrue(Base32::isValidUpper('JBSWY3DPEE======'));
+        $this->assertFalse(Base32::isValidUpper('ABCDE'));
         $this->assertFalse(Base32::isValidUpper('ABCDEF=='));
         $this->assertFalse(Base32::isValidUpper('JBSWY31P'));
     }
