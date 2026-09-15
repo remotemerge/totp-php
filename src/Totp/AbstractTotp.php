@@ -124,9 +124,9 @@ abstract class AbstractTotp
     {
         // Extract the hash values
         $values = (ord($hash[$offset]) & 0x7f) << 24;
-        $values |= (ord($hash[$offset + 1]) & 0xff) << 16;
-        $values |= (ord($hash[$offset + 2]) & 0xff) << 8;
-        $values |= ord($hash[$offset + 3]) & 0xff;
+        $values |= ord($hash[$offset + 1]) << 16;
+        $values |= ord($hash[$offset + 2]) << 8;
+        $values |= ord($hash[$offset + 3]);
 
         return $values % (10 ** $this->digits);
     }
