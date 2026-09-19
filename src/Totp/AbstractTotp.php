@@ -123,11 +123,11 @@ abstract class AbstractTotp
     protected function extractCodeFromHash(string $hash, int $offset): int
     {
         // Extract the hash values
-        $hash1 = ord($hash[$offset]) & 0x7f;
-        $hash2 = ord($hash[$offset + 1]) & 0xff;
-        $hash3 = ord($hash[$offset + 2]) & 0xff;
-        $hash4 = ord($hash[$offset + 3]) & 0xff;
+        $values = (ord($hash[$offset]) & 0x7f) << 24;
+        $values |= ord($hash[$offset + 1]) << 16;
+        $values |= ord($hash[$offset + 2]) << 8;
+        $values |= ord($hash[$offset + 3]);
 
-        return (($hash1 << 24) | ($hash2 << 16) | ($hash3 << 8) | $hash4) % (10 ** $this->digits);
+        return $values % (10 ** $this->digits);
     }
 }
