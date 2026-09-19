@@ -9,7 +9,7 @@ GROUP_ID=$(id -g)
 export USER_ID GROUP_ID
 
 # Create the network for the services
-docker network create rm-pkg-network >/dev/null 2>&1 || true
+docker network create totp-php-network >/dev/null 2>&1 || true
 
 # Start services
 docker compose --file compose.yml up --build
