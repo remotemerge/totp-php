@@ -1,9 +1,11 @@
 #!/bin/bash
 
-# Set current user IDs in the environment
-USER_ID=$(id -u)
-GROUP_ID=$(id -g)
-export USER_ID GROUP_ID
+# Enable strict error handling
+set -euo pipefail
+
+# Set current UID in environment
+APPLICATION_UID=$(id -u)
+export APPLICATION_UID
 
 # Login to the app container
-docker compose --file compose.yml exec --user "${USER_ID}" web-server bash
+docker compose --file compose.yml exec --user "${APPLICATION_UID}" web-server bash
