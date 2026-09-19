@@ -18,6 +18,9 @@ final class AbstractTotpTest extends TestCase
 {
     private Totp $totp;
 
+    /**
+     * @var ReflectionClass<Totp>
+     */
     private ReflectionClass $reflectionClass;
 
     protected function setUp(): void
@@ -220,8 +223,9 @@ final class AbstractTotpTest extends TestCase
         $reflectionMethod = $this->reflectionClass->getMethod('packTimeSlice');
 
         $packed = $reflectionMethod->invoke($this->totp, 1234567890);
-        $this->assertSame(8, strlen((string) $packed));
-        $this->assertEquals("\x00\x00\x00\x00\x49\x96\x02\xd2", $packed);
+        $this->assertIsString($packed);
+        $this->assertSame(8, strlen($packed));
+        $this->assertSame("\x00\x00\x00\x00\x49\x96\x02\xd2", $packed);
     }
 
     /**
