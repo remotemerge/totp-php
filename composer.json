@@ -39,6 +39,17 @@
     "phpunit/phpunit": "^10.5.64",
     "rector/rector": "^2.6.7"
   },
+  "scripts": {
+    "fixer": [
+      "XDEBUG_MODE=off ./vendor/bin/php-cs-fixer fix"
+    ],
+    "rector": [
+      "XDEBUG_MODE=off ./vendor/bin/rector process --clear-cache"
+    ],
+    "test": [
+      "XDEBUG_MODE=coverage ./vendor/bin/phpunit"
+    ]
+  },
   "config": {
     "discard-changes": true,
     "optimize-autoloader": true,
