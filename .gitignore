@@ -2,18 +2,12 @@
 /vendor/
 
 ## Build directories
-/build/
-/bundle/
 /coverage/
-/dist/
 
 ### JetBrains
 /.idea/*
 !/.idea/dictionaries/
 !/.idea/dictionaries/*.xml
-!/.idea/jsLibraryMappings.xml
-!/.idea/prettier.xml
-!/.idea/vcs.xml
 
 ### Visual Studio Code
 /.vscode/*
@@ -56,3 +50,4 @@ ehthumbs_vista.db
 *.log
 *.zip
 .env
+phpstan.*
