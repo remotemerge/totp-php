@@ -29,6 +29,24 @@ final class TotpFactoryTest extends TestCase
     }
 
     /**
+     * Test that the advanced methods documented on the factory result are callable.
+     *
+     * @throws TotpException
+     */
+    public function test_create_exposes_advanced_methods(): void
+    {
+        $totp = TotpFactory::create();
+        $secret = $totp->generateSecret();
+        $currentSlice = (int) floor(time() / 30);
+
+        $this->assertSame(
+            $currentSlice,
+            $totp->verifyCodeOnce($secret, $totp->getCode($secret, $currentSlice), $currentSlice - 1),
+        );
+        $this->assertTrue($totp->auditSecret($secret)['is_strong']);
+    }
+
+    /**
      * Test creating a configured TOTP instance.
      *
      * @throws TotpException
