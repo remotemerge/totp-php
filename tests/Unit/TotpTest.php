@@ -579,4 +579,19 @@ final class TotpTest extends TestCase
         $this->assertStringContainsString('secret=GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGE&', $uri);
         $this->assertStringNotContainsString('=====', $uri);
     }
+
+    /**
+     * Test generateUri produces the exact expected string for default configuration.
+     * @throws TotpException
+     */
+    public function test_generate_uri_exact_output(): void
+    {
+        $totp = new Totp();
+
+        $this->assertSame(
+            'otpauth://totp/Example%20Service:user%40example.com?secret=JBSWY3DPEHPK3PXP'
+            . '&issuer=Example%20Service&algorithm=SHA1&digits=6&period=30',
+            $totp->generateUri('JBSWY3DPEHPK3PXP', 'user@example.com', 'Example Service'),
+        );
+    }
 }
