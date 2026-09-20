@@ -115,6 +115,23 @@ abstract class AbstractTotp
     }
 
     /**
+     * Validates that a time slice is within the supported counter domain.
+     *
+     * The domain is non-negative because pack('J') is unsigned: a negative slice would
+     * silently wrap to a huge counter and yield a code for a pre-epoch time instead of
+     * failing. Slice 0 stays valid; it is the replay sentinel.
+     *
+     * @param int $timeSlice The time slice to validate.
+     * @throws TotpException If the time slice is negative.
+     */
+    protected function validateTimeSlice(int $timeSlice): void
+    {
+        if ($timeSlice < 0) {
+            throw new TotpException(MessageStore::get('validation.time_slice_negative'));
+        }
+    }
+
+    /**
      * Gets the current time slice based on the current time and the time slice duration.
      *
      * @return int The current time slice.
