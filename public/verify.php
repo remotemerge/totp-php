@@ -18,6 +18,7 @@ use RemoteMerge\Totp\TotpFactory;
  */
 
 header('Content-Type: application/json');
+header('Cache-Control: no-store');
 
 try {
     // Generate Secret Key
