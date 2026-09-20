@@ -201,6 +201,15 @@ final class Totp extends AbstractTotp implements TotpInterface
         $this->validateTimeSlice($currentSlice);
         $decodedSecret = Base32::decodeUpper($secret);
 
+        // Distinct slices can yield identical codes: with the RFC 4226 key, 910737 and
+        // 910738 both produce 911617. Skipping consumed slices alone would then accept
+        // that code twice, so the previous slice's code is refused outright.
+        // Slice 0 is the enrollment sentinel, not a consumed login.
+        if ($lastAcceptedSlice > 0
+            && hash_equals($this->getCodeFromDecodedSecret($decodedSecret, $lastAcceptedSlice), $code)) {
+            return null;
+        }
+
         for ($offset = -$discrepancy; $offset <= $discrepancy; ++$offset) {
             $candidateSlice = $currentSlice + $offset;
 
