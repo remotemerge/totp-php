@@ -361,6 +361,16 @@ final class AbstractTotpTest extends TestCase
     }
 
     /**
+     * Test that zero is a valid max_discrepancy and is not treated as unset.
+     */
+    public function test_constructor_accepts_zero_max_discrepancy(): void
+    {
+        $totp = new Totp(['max_discrepancy' => 0]);
+        $reflectionProperty = $this->reflectionClass->getProperty('maxDiscrepancy');
+        $this->assertSame(0, $reflectionProperty->getValue($totp));
+    }
+
+    /**
      * Test validateSecret does not emit a warning for a strong secret (>= 20 bytes).
      *
      * @throws ReflectionException
