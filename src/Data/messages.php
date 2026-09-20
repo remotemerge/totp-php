@@ -15,6 +15,7 @@ return [
         'secret_length' => 'The secret key is invalid. Its length must be a multiple of 8.',
         'secret_characters' => 'The secret key contains invalid characters.',
         'code_format' => 'The code must be a %d-digit number.',
+        'time_slice_negative' => 'The time slice must be zero or a positive integer.',
     ],
 
     /**
