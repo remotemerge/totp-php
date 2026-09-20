@@ -292,6 +292,35 @@ final class AbstractTotpTest extends TestCase
     }
 
     /**
+     * Test validateTimeSlice accepts the non-negative counter domain.
+     *
+     * @throws ReflectionException
+     */
+    public function test_validate_time_slice_accepts_non_negative(): void
+    {
+        $reflectionMethod = $this->reflectionClass->getMethod('validateTimeSlice');
+
+        $this->expectNotToPerformAssertions();
+        $reflectionMethod->invoke($this->totp, 0);
+        $reflectionMethod->invoke($this->totp, 1);
+        $reflectionMethod->invoke($this->totp, PHP_INT_MAX);
+    }
+
+    /**
+     * Test validateTimeSlice rejects a negative counter.
+     *
+     * @throws ReflectionException
+     */
+    public function test_validate_time_slice_rejects_negative(): void
+    {
+        $reflectionMethod = $this->reflectionClass->getMethod('validateTimeSlice');
+
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('The time slice must be zero or a positive integer.');
+        $reflectionMethod->invoke($this->totp, -1);
+    }
+
+    /**
      * Test validateSecret does not emit a warning for a strong secret (>= 20 bytes).
      *
      * @throws ReflectionException
