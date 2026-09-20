@@ -369,6 +369,8 @@ Strong secret: No
 ⚠️  Warning: Secret is weak (10 bytes); recommend >= 20 bytes for adequate security.
 ```
 
+> **`is_strong` measures length and syntax, not randomness.** It reports that the secret is valid Base32 of at least 20 bytes, per [RFC 4226 §4](https://www.rfc-editor.org/rfc/rfc4226#section-4). A predictable key of sufficient length — for example one that decodes to 20 zero bytes — is still reported as strong. Randomness cannot be established by inspecting a single value. Use `generateSecret()` for new enrollments, and enforce your own minimum-length policy at the import boundary.
+
 ### **Configuring the Maximum Discrepancy**
 
 By default the discrepancy parameter in `verifyCode()` and `verifyCodeOnce()` is capped at **10**. Pass `max_discrepancy` when creating the instance to tighten or relax this limit:
