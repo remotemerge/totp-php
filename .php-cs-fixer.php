@@ -3,6 +3,7 @@
 // Configure file finder
 $finder = PhpCsFixer\Finder::create()
     ->in([
+        __DIR__ . '/.github/scripts',
         __DIR__ . '/public',
         __DIR__ . '/src',
         __DIR__ . '/tests',
