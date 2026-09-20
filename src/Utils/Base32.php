@@ -146,6 +146,8 @@ final class Base32
         }
 
         // Validate against the Base32 alphabet
-        return preg_match('/^[A-Z2-7]*$/', $unpadded) === 1;
+        // \z, not $: PCRE's `$` also matches before a trailing newline, so "AAAAAAA\n"
+        // passed here and then hit an undefined DECODE_MAP key mid-decode.
+        return preg_match('/\A[A-Z2-7]*\z/', $unpadded) === 1;
     }
 }
