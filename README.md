@@ -393,6 +393,13 @@ $totp->verifyCode($secret, $code, 3);
 
 `max_discrepancy` must be a non-negative integer; anything else throws a `TotpException` at construction rather than being silently coerced. It is a **ceiling**, not the active window — the default window remains the `±1` default of the `$discrepancy` argument. Widening the window multiplies both the HMAC work per attempt and the number of codes an attacker can guess against, so keep per-account attempt limits in the application.
 
+### **Input and Counter Contract**
+
+- **Secrets** must be uppercase RFC 4648 Base32 with a length that is a multiple of 8, optionally `=`-padded. Lowercase, whitespace, newlines, and other characters are rejected with a `TotpException`.
+- **Codes** are strings so leading zeroes survive. A malformed code — wrong length, non-digits, or a trailing newline — throws a `TotpException`; a well-formed code that simply does not match returns `false` (or `null` from `verifyCodeOnce()`). Never convert codes to integers.
+- **`$timeSlice`** is a counter (`floor(unixTime / period)`), not a Unix timestamp. The supported domain is non-negative; a negative slice throws a `TotpException`, and verification windows are clamped so they cannot run below zero or overflow.
+- **Configuration** is applied atomically: if any option in a `configure()` call is invalid, the whole call throws and the instance keeps its previous settings. The `algorithm`, `digits`, and `period` used at verification must match those used at enrollment.
+
 ### **Generate a QR Code Image**
 
 Generate the `otpauth://` URI on the backend, then render the QR image locally in the browser. Avoid sending TOTP setup URIs to third-party QR image APIs because the URI contains the user's secret.
