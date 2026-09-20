@@ -502,4 +502,15 @@ final class TotpTest extends TestCase
 
         $this->assertSame($currentSlice, $totp->verifyCodeOnce($secret, $code, 0));
     }
+
+    /**
+     * Test verifyCodeOnce rejects a negative last accepted slice.
+     */
+    public function test_verify_code_once_rejects_negative_last_accepted_slice(): void
+    {
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('The time slice must be zero or a positive integer.');
+        $totp = new Totp();
+        $totp->verifyCodeOnce('JBSWY3DPEHPK3PXP', '123456', -1);
+    }
 }
