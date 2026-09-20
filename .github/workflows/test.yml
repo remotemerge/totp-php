@@ -82,3 +82,8 @@ jobs:
 
       - name: Audit locked dependencies
         run: composer audit --locked
+
+      - name: Run PHPStan
+        run: ./vendor/bin/phpstan analyse --no-progress
+        env:
+          XDEBUG_MODE: off
