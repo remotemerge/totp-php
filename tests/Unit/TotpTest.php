@@ -563,4 +563,20 @@ final class TotpTest extends TestCase
         $totp = new Totp();
         $totp->verifyCode('JBSWY3DPEHPK3PXP', "123456\n");
     }
+
+    /**
+     * Test generateUri omits Base32 padding from the secret parameter.
+     * @throws TotpException
+     */
+    public function test_generate_uri_omits_secret_padding(): void
+    {
+        $totp = new Totp();
+        // 21 bytes encode to 34 symbols plus six '=' padding characters.
+        $secret = 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGE======';
+
+        $uri = $totp->generateUri($secret, 'user@example.com', 'ExampleService');
+
+        $this->assertStringContainsString('secret=GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGE&', $uri);
+        $this->assertStringNotContainsString('=====', $uri);
+    }
 }
