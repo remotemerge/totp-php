@@ -144,6 +144,9 @@ abstract class AbstractTotp
     /**
      * Packs the time slice into a binary string.
      *
+     * The 'J' format is the source of this package's 64-bit requirement (declared as
+     * php-64bit in composer.json); PHP does not provide it on 32-bit builds.
+     *
      * @param int $timeSlice The time slice to pack.
      * @return string The packed binary string (8 bytes, big-endian unsigned 64-bit integer).
      */
