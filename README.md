@@ -54,10 +54,10 @@ Configurable time slice duration (e.g., **30 or 60 seconds**) to match security 
 Allows **time slice discrepancy** when verifying TOTP codes, ensuring a smooth user experience. This is especially useful for handling clock drifts.
 
 ✅ **Replay Attack Protection**
-The `verifyCodeOnce()` method prevents reuse of already-accepted codes by tracking the last accepted time slice, eliminating replay attack vectors.
+The `verifyCodeOnce()` method blocks reuse of an accepted code by tracking the last accepted time slice and rejecting that slice's code. Your application supplies the atomic persistence — see [Replay Attack Protection](#replay-attack-protection) for the exact guarantee.
 
 ✅ **Secret Security Auditing**
-The `auditSecret()` method inspects a secret key and returns its decoded byte length, strength rating, and actionable warnings — without throwing exceptions.
+The `auditSecret()` method inspects a secret key and returns its decoded byte length, a length-based strength flag, and actionable warnings — without throwing exceptions.
 
 ✅ **Discrepancy Bounds Enforcement**
 The discrepancy parameter is validated against a configurable upper bound (default: 10), preventing misconfigured or malicious values from widening the verification window indefinitely.
