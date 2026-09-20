@@ -19,14 +19,22 @@ final class Totp extends AbstractTotp implements TotpInterface
      */
     public function configure(array $options): void
     {
-        if (isset($options['algorithm'])) {
-            $selectedAlgorithm = strtolower((string) $options['algorithm']);
+        // Staged so a later invalid option cannot leave an earlier one applied; a
+        // caller that catches the exception keeps a usable instance.
+        $algorithm = $this->algorithm;
+        $digits = $this->digits;
+        $period = $this->period;
 
-            if (!in_array($selectedAlgorithm, self::SUPPORTED_ALGORITHMS, true)) {
+        if (isset($options['algorithm'])) {
+            if (!is_string($options['algorithm'])) {
                 throw new TotpException(MessageStore::get('configuration.unsupported_algorithm'));
             }
 
-            $this->algorithm = $selectedAlgorithm;
+            $algorithm = strtolower($options['algorithm']);
+
+            if (!in_array($algorithm, self::SUPPORTED_ALGORITHMS, true)) {
+                throw new TotpException(MessageStore::get('configuration.unsupported_algorithm'));
+            }
         }
 
         if (isset($options['digits'])) {
@@ -34,7 +42,7 @@ final class Totp extends AbstractTotp implements TotpInterface
                 throw new TotpException(MessageStore::get('configuration.invalid_digits'));
             }
 
-            $this->digits = $options['digits'];
+            $digits = $options['digits'];
         }
 
         if (isset($options['period'])) {
@@ -42,8 +50,12 @@ final class Totp extends AbstractTotp implements TotpInterface
                 throw new TotpException(MessageStore::get('configuration.invalid_period'));
             }
 
-            $this->period = $options['period'];
+            $period = $options['period'];
         }
+
+        $this->algorithm = $algorithm;
+        $this->digits = $digits;
+        $this->period = $period;
     }
 
     /**
@@ -100,6 +112,7 @@ final class Totp extends AbstractTotp implements TotpInterface
         $this->validateSecret($secret);
 
         $timeSlice ??= $this->getCurrentTimeSlice();
+        $this->validateTimeSlice($timeSlice);
         $decodedSecret = Base32::decodeUpper($secret);
 
         return $this->getCodeFromDecodedSecret($decodedSecret, $timeSlice);
@@ -144,10 +157,16 @@ final class Totp extends AbstractTotp implements TotpInterface
         $this->validateCode($code);
 
         $currentSlice = $timeSlice ?? $this->getCurrentTimeSlice();
+        $this->validateTimeSlice($currentSlice);
         $decodedSecret = Base32::decodeUpper($secret);
 
-        for ($offset = -$discrepancy; $offset <= $discrepancy; ++$offset) {
-            if (hash_equals($this->getCodeFromDecodedSecret($decodedSecret, $currentSlice + $offset), $code)) {
+        $firstSlice = max(0, $currentSlice - $discrepancy);
+        $lastSlice = $currentSlice + min($discrepancy, PHP_INT_MAX - $currentSlice);
+
+        // Counting steps keeps the candidate an int. Incrementing past PHP_INT_MAX
+        // silently yields a float, which the strictly typed HMAC helper rejects.
+        for ($step = 0, $steps = $lastSlice - $firstSlice; $step <= $steps; ++$step) {
+            if (hash_equals($this->getCodeFromDecodedSecret($decodedSecret, $firstSlice + $step), $code)) {
                 return true;
             }
         }
@@ -158,14 +177,22 @@ final class Totp extends AbstractTotp implements TotpInterface
     /**
      * Verifies the TOTP code while preventing replay attacks.
      *
-     * Skips any time slices at or below the last accepted slice, ensuring a
-     * previously used code cannot be reused.
+     * Accepts only slices above $lastAcceptedSlice, and refuses that slice's own code
+     * (adjacent slices can collide on the same digits).
+     *
+     * Guarantees monotonic slice progression, not a full history of spent codes: one
+     * stored integer cannot express the latter. Rejecting any repeated code for its
+     * whole validity window needs an expiring per-credential record in the caller.
+     *
+     * The returned slice must be persisted with a compare-and-set against the value
+     * passed in; this class holds no state and cannot make that update atomic. Two
+     * concurrent requests reading the same slice will otherwise both succeed.
      *
      * @param string $secret The secret key in Base32 format.
      * @param string $code The code to verify.
-     * @param int $lastAcceptedSlice The last time slice that was successfully accepted.
+     * @param int $lastAcceptedSlice The last time slice that was successfully accepted. Use 0 on first login.
      * @param int $discrepancy The allowed discrepancy in time slices. Defaults to 1.
-     * @throws TotpException If the secret key is invalid or discrepancy is out of range.
+     * @throws TotpException If the secret key, code, discrepancy, or last accepted slice is invalid.
      * @return int|null The matched time slice if valid, or null if invalid or replay detected.
      */
     public function verifyCodeOnce(string $secret, string $code, int $lastAcceptedSlice, int $discrepancy = 1): ?int
@@ -176,16 +203,28 @@ final class Totp extends AbstractTotp implements TotpInterface
 
         $this->validateSecret($secret);
         $this->validateCode($code);
+        $this->validateTimeSlice($lastAcceptedSlice);
 
         $currentSlice = $this->getCurrentTimeSlice();
+        $this->validateTimeSlice($currentSlice);
         $decodedSecret = Base32::decodeUpper($secret);
 
-        for ($offset = -$discrepancy; $offset <= $discrepancy; ++$offset) {
-            $candidateSlice = $currentSlice + $offset;
+        // Distinct slices can yield identical codes: with the RFC 4226 key, 910737 and
+        // 910738 both produce 911617. Skipping consumed slices alone would then accept
+        // that code twice, so the previous slice's code is refused outright.
+        // Slice 0 is the enrollment sentinel, not a consumed login.
+        if ($lastAcceptedSlice > 0
+            && hash_equals($this->getCodeFromDecodedSecret($decodedSecret, $lastAcceptedSlice), $code)) {
+            return null;
+        }
 
-            if ($candidateSlice <= $lastAcceptedSlice) {
-                continue;
-            }
+        $firstSlice = max($lastAcceptedSlice + 1, $currentSlice - $discrepancy, 0);
+        $lastSlice = $currentSlice + min($discrepancy, PHP_INT_MAX - $currentSlice);
+
+        // Counting steps keeps the candidate an int. Incrementing past PHP_INT_MAX
+        // silently yields a float, which the strictly typed HMAC helper rejects.
+        for ($step = 0, $steps = $lastSlice - $firstSlice; $step <= $steps; ++$step) {
+            $candidateSlice = $firstSlice + $step;
 
             if (hash_equals($this->getCodeFromDecodedSecret($decodedSecret, $candidateSlice), $code)) {
                 return $candidateSlice;
@@ -200,6 +239,9 @@ final class Totp extends AbstractTotp implements TotpInterface
      *
      * This method never throws exceptions; all issues are reported via the
      * returned array so callers can handle them gracefully.
+     *
+     * `is_strong` means length >= 20 bytes and valid syntax, never entropy: 32 'A's
+     * decode to 20 zero bytes and report true. Randomness is unknowable from one value.
      *
      * @param string $secret The secret key in Base32 format to audit.
      * @return array{length_bytes: int, is_strong: bool, warnings: list<string>} Diagnostic information.
@@ -230,8 +272,7 @@ final class Totp extends AbstractTotp implements TotpInterface
             ];
         }
 
-        $decoded = Base32::decodeUpper($secret);
-        $lengthBytes = strlen($decoded);
+        $lengthBytes = intdiv(strlen(rtrim($secret, '=')) * 5, 8);
 
         if ($lengthBytes < 20) {
             $warnings[] = MessageStore::get('security.audit_weak_secret', $lengthBytes);
@@ -248,20 +289,27 @@ final class Totp extends AbstractTotp implements TotpInterface
      * Generates a TOTP URI for QR code generation.
      *
      * @param string $secret The secret key in Base32 format.
-     * @param string $label The label for the account (e.g., user@example.com).
-     * @param string $issuer The issuer of the TOTP (e.g., the service name).
-     * @throws TotpException If the secret key is invalid.
+     * @param string $label The label for the account (e.g., user@example.com). Must not contain a colon.
+     * @param string $issuer The issuer of the TOTP (e.g., the service name). Must not contain a colon.
+     * @throws TotpException If the secret key is invalid or a label component contains a colon.
      * @return string The TOTP URI in the format `otpauth://totp/{issuer}:{label}?secret={secret}&issuer={issuer}&algorithm={ALGORITHM}&digits={digits}&period={period}`.
      *               The algorithm is returned in uppercase (e.g., SHA1, SHA256, SHA512) per the Key URI Format specification.
+     *               Trailing `=` padding is omitted from the secret, as recommended by the Key URI Format.
      */
     public function generateUri(string $secret, string $label, string $issuer): string
     {
         $this->validateSecret($secret);
 
+        // The colon delimits issuer from account in the label, so one inside either
+        // value would re-split the label and misattribute the account in the app.
+        if (str_contains($label, ':') || str_contains($issuer, ':')) {
+            throw new TotpException(MessageStore::get('validation.label_colon'));
+        }
+
         $strUri = 'otpauth://totp/%s:%s?secret=%s&issuer=%s&algorithm=%s&digits=%d&period=%d';
         $encodedLabel = rawurlencode($label);
         $encodedIssuer = rawurlencode($issuer);
 
-        return sprintf($strUri, $encodedIssuer, $encodedLabel, $secret, $encodedIssuer, strtoupper($this->algorithm), $this->digits, $this->period);
+        return sprintf($strUri, $encodedIssuer, $encodedLabel, rtrim($secret, '='), $encodedIssuer, strtoupper($this->algorithm), $this->digits, $this->period);
     }
 }

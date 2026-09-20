@@ -54,10 +54,10 @@ Configurable time slice duration (e.g., **30 or 60 seconds**) to match security 
 Allows **time slice discrepancy** when verifying TOTP codes, ensuring a smooth user experience. This is especially useful for handling clock drifts.
 
 ✅ **Replay Attack Protection**
-The `verifyCodeOnce()` method prevents reuse of already-accepted codes by tracking the last accepted time slice, eliminating replay attack vectors.
+The `verifyCodeOnce()` method blocks reuse of an accepted code by tracking the last accepted time slice and rejecting that slice's code. Your application supplies the atomic persistence — see [Replay Attack Protection](#replay-attack-protection) for the exact guarantee.
 
 ✅ **Secret Security Auditing**
-The `auditSecret()` method inspects a secret key and returns its decoded byte length, strength rating, and actionable warnings — without throwing exceptions.
+The `auditSecret()` method inspects a secret key and returns its decoded byte length, a length-based strength flag, and actionable warnings — without throwing exceptions.
 
 ✅ **Discrepancy Bounds Enforcement**
 The discrepancy parameter is validated against a configurable upper bound (default: 10), preventing misconfigured or malicious values from widening the verification window indefinitely.
@@ -98,7 +98,7 @@ TOTP PHP follows **RFC 6238** for time-based one-time passwords, validates secre
 
 ## **Get Started in Minutes**
 
-Adding TOTP PHP to a project is quick and easy. The library requires **PHP 8.1** or higher.
+Adding TOTP PHP to a project is quick and easy. The library requires **PHP 8.1** or higher on a **64-bit** PHP build. Counter packing uses the 64-bit `J` format, which PHP does not provide on 32-bit builds, so Composer declares `php-64bit` and installation fails early on unsupported platforms rather than failing inside authentication.
 
 ### **Installation**
 
@@ -202,6 +202,12 @@ echo "QR Code URI: $uri\n";
 ```text
 QR Code URI: otpauth://totp/YourApp:user%40example.com?secret=MHYPSU6HI7UUMFTQD24XVUUQR7JLKV6Y&issuer=YourApp&algorithm=SHA1&digits=6&period=30
 ```
+
+Per the [Key URI Format](https://github.com/google/google-authenticator/wiki/Key-Uri-Format), trailing `=` padding is omitted from the `secret` parameter, and neither the label nor the issuer may contain a colon — that character separates the two components, so a colon in either throws a `TotpException`. The stored secret itself is never rewritten.
+
+Treat the URI and its QR image as the credential itself: both carry the raw secret. Keep them out of logs, analytics, debug traces, and third-party services.
+
+The default **SHA1 / 6 digits / 30 seconds** combination is the interoperability target for authenticator apps. Other algorithm, digit, and period combinations are valid per the specification but are not uniformly supported — test them against the apps you intend to support rather than assuming compatibility.
 
 ---
 
@@ -310,6 +316,30 @@ if ($newSlice === null) {
 }
 ```
 
+#### **Persist the slice atomically**
+
+The library is stateless: it compares the slice you pass in and returns the slice you should store. It cannot lock anything on your behalf. The read-verify-write sequence above is a race — two concurrent requests can read the same `last_slice`, both verify the same code, and both succeed.
+
+Make the update conditional on the value you read, and grant the session only when exactly one row changes:
+
+```sql
+UPDATE user_totp
+SET last_slice = :matched
+WHERE user_id = :user
+  AND credential_version = :version
+  AND last_slice = :observed;
+```
+
+`:matched` is the slice returned by `verifyCodeOnce()`, and `:observed` is the value read before verification. Treat zero affected rows, a rollback, or a failed write as a failed authentication. Reset the stored slice when the secret is rotated, and note that changing `period` changes what a stored slice means, so migrate that state alongside the credential configuration.
+
+#### **What this does and does not guarantee**
+
+`verifyCodeOnce()` guarantees that accepted slices strictly increase, and additionally rejects a code identical to the one produced by the last accepted slice. That second check matters because adjacent slices can coincidentally produce the same code — for the RFC test key, slices `910737` and `910738` both yield `911617`, which sequential persistence alone would accept twice.
+
+A single stored slice cannot represent every code ever accepted. If you must reject any repeated code for the whole time it is valid, keep an atomic, expiring record keyed by credential and a protected fingerprint of the accepted code. Also note that `verifyCode()` holds no replay state at all — it will accept the same valid code repeatedly.
+
+Slice `0` is the documented initial sentinel and is treated as "no previous login", so a first login is not blocked. A negative slice is rejected with a `TotpException`.
+
 ### **Secret Security Audit**
 
 Use `auditSecret()` to inspect a secret key before storing or using it. The method never throws — all diagnostics are returned in the result array:
@@ -339,6 +369,8 @@ Strong secret: No
 ⚠️  Warning: Secret is weak (10 bytes); recommend >= 20 bytes for adequate security.
 ```
 
+> **`is_strong` measures length and syntax, not randomness.** It reports that the secret is valid Base32 of at least 20 bytes, per [RFC 4226 §4](https://www.rfc-editor.org/rfc/rfc4226#section-4). A predictable key of sufficient length — for example one that decodes to 20 zero bytes — is still reported as strong. Randomness cannot be established by inspecting a single value. Use `generateSecret()` for new enrollments, and enforce your own minimum-length policy at the import boundary.
+
 ### **Configuring the Maximum Discrepancy**
 
 By default the discrepancy parameter in `verifyCode()` and `verifyCodeOnce()` is capped at **10**. Pass `max_discrepancy` when creating the instance to tighten or relax this limit:
@@ -359,9 +391,20 @@ $isValid = $totp->verifyCode($secret, $code, 1);
 $totp->verifyCode($secret, $code, 3);
 ```
 
+`max_discrepancy` must be a non-negative integer; anything else throws a `TotpException` at construction rather than being silently coerced. It is a **ceiling**, not the active window — the default window remains the `±1` default of the `$discrepancy` argument. Widening the window multiplies both the HMAC work per attempt and the number of codes an attacker can guess against, so keep per-account attempt limits in the application.
+
+### **Input and Counter Contract**
+
+- **Secrets** must be uppercase RFC 4648 Base32 with a length that is a multiple of 8, optionally `=`-padded. Lowercase, whitespace, newlines, and other characters are rejected with a `TotpException`.
+- **Codes** are strings so leading zeroes survive. A malformed code — wrong length, non-digits, or a trailing newline — throws a `TotpException`; a well-formed code that simply does not match returns `false` (or `null` from `verifyCodeOnce()`). Never convert codes to integers.
+- **`$timeSlice`** is a counter (`floor(unixTime / period)`), not a Unix timestamp. The supported domain is non-negative; a negative slice throws a `TotpException`, and verification windows are clamped so they cannot run below zero or overflow.
+- **Configuration** is applied atomically: if any option in a `configure()` call is invalid, the whole call throws and the instance keeps its previous settings. The `algorithm`, `digits`, and `period` used at verification must match those used at enrollment.
+
 ### **Generate a QR Code Image**
 
 Generate the `otpauth://` URI on the backend, then render the QR image locally in the browser. Avoid sending TOTP setup URIs to third-party QR image APIs because the URI contains the user's secret.
+
+> The example below imports the QR library from a CDN for brevity. Loading executable JavaScript from a third party onto an enrollment page is a separate trust decision from sending it your data: that script runs with access to the secret on the page. Bundle the library locally for production enrollment, serve it over TLS, and return enrollment responses with `Cache-Control: no-store`.
 
 ```php
 // secret.php
@@ -415,6 +458,8 @@ Test the TOTP PHP library locally using Docker. This method automatically sets u
    ```
 
 3. Access the application at `http://localhost:8080`.
+
+   > The bundled demo is a **stateless TOTP calculator**, not a reference authentication flow. The browser supplies the secret it wants verified, so the caller controls both the key and the code; nothing is enrolled and no identity is proven. In production, load the secret for an authenticated or pending-login account from server-side storage, rate limit attempts, and persist replay state atomically. The demo is published on loopback only.
 
 4. (Optional) Access the container shell for development:
 
@@ -475,5 +520,7 @@ Contributions from the **Open Source community** are highly valued and appreciat
 All contributions are reviewed and appreciated.
 
 ## **Screenshots**
+
+The bundled demonstration calculator. The QR code shown is a disposable example, never a live account credential.
 
 ![Screenshot 1](public/img/demo.png)

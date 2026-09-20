@@ -1,0 +1,62 @@
+name: SonarQube Scan
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 0 * * 1"
+
+# Minimum required permissions for security
+permissions:
+  contents: read
+
+# Cancel in-progress runs when new commits are pushed
+concurrency:
+  group: sonar-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test and scan
+    # SONAR_TOKEN is unreadable from forks and Dependabot.
+    if: >-
+      github.event_name != 'pull_request' ||
+      (
+        github.event.pull_request.user.login != 'dependabot[bot]' &&
+        github.event.pull_request.head.repo.full_name == github.repository
+      )
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Sonar needs full history for blame and new-code detection.
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: "8.1"
+          extensions: xdebug
+          coverage: xdebug
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
+
+      - name: Run tests with coverage
+        run: ./vendor/bin/phpunit
+        env:
+          XDEBUG_MODE: coverage
+
+      - name: Run SonarQube scan
+        uses: SonarSource/sonarqube-scan-action@22918119ff8e1ca75a623e15c8296b6ea4fbe28f # v8.2.1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Check SonarQube quality gate
+        uses: SonarSource/sonarqube-quality-gate-action@7a5fffe8e523c40e0c740b6bc2712ab503e52efa # v1.2.1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

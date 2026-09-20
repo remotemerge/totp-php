@@ -3,30 +3,64 @@ name: Install
 on:
   # Run the workflow on new releases
   release:
-    types: [ published ]
-    branches: [ main ]
+    types: [published]
+    branches: [main]
+
+# Let each release finish; a newer one must not cancel its smoke test
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.release.tag_name || github.ref }}
+  cancel-in-progress: false
+
+# Minimum required permissions for security
+permissions:
+  contents: read
 
 jobs:
   install:
     # Run on the latest OS versions
     runs-on: ${{ matrix.os }}
+
+    # Prevent hanging jobs
+    timeout-minutes: 15
+
     strategy:
+      # Run all matrix combinations to completion
+      fail-fast: false
       matrix:
         # Define the OS and PHP versions to test
-        os: [ ubuntu-24.04, windows-latest, macos-latest ]
-        php: [ '8.1', '8.2', '8.3', '8.4', '8.5' ]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        php: ["8.1", "8.2", "8.3", "8.4", "8.5"]
 
     steps:
-      - name: "Install PHP"
-        uses: shivammathur/setup-php@v2
+      # Only for the smoke-test script; the package itself comes from the registry.
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/scripts
+          path: repo
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         with:
           php-version: ${{ matrix.php }}
 
-      - name: "Display PHP and Composer version information"
+      - name: Display PHP and Composer versions
         run: php --version && composer --version
 
-      - name: "Initialize Composer"
+      - name: Initialize a scratch project
         run: composer init --no-interaction --stability=stable
 
-      - name: "Install dependencies"
-        run: composer require remotemerge/totp-php
+      # Pin to the tag that triggered this run, so a registry publication delay
+      # fails the job instead of silently smoke-testing an earlier release.
+      - name: Install the released version
+        shell: bash
+        run: composer require "remotemerge/totp-php:${RELEASE_TAG#v}"
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+
+      - name: Display the installed version
+        run: composer show remotemerge/totp-php
+
+      # Installation alone proves nothing about the artifact actually working.
+      - name: Run the smoke test
+        run: php repo/.github/scripts/smoke-test.php

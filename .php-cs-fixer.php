@@ -3,6 +3,7 @@
 // Configure file finder
 $finder = PhpCsFixer\Finder::create()
     ->in([
+        __DIR__ . '/.github/scripts',
         __DIR__ . '/public',
         __DIR__ . '/src',
         __DIR__ . '/tests',
@@ -15,10 +16,10 @@ $config->setUsingCache(false)->setRiskyAllowed(true);
 
 // Configure rules and return config
 return $config->setRules([
-    '@PER-CS' => true,
-    '@PER-CS:risky' => true,
-    '@PHP81Migration' => true,
-    '@PHPUnit100Migration:risky' => true,
+    '@PER-CS3x0' => true,
+    '@PER-CS3x0:risky' => true,
+    '@PHP8x1Migration' => true,
+    '@PHPUnit10x0Migration:risky' => true,
 
     // Type Safety
     'declare_strict_types' => true,
@@ -30,13 +31,10 @@ return $config->setRules([
     'strict_comparison' => true,
 
     // Modern Features
-    'array_syntax' => ['syntax' => 'short'],
     'modernize_types_casting' => true,
-    'ternary_to_null_coalescing' => true,
     'use_arrow_functions' => true,
 
     // Code Quality & Formatting
-    'clean_namespace' => true,
     'function_declaration' => [
         'closure_function_spacing' => 'one',
         'closure_fn_spacing' => 'one',
@@ -44,10 +42,11 @@ return $config->setRules([
     'global_namespace_import' => [
         'import_classes' => true,
         'import_constants' => true,
+        'import_functions' => true,
     ],
     'no_superfluous_elseif' => true,
     'no_unused_imports' => true,
-    'ordered_imports' => true,
+    'ordered_imports' => ['sort_algorithm' => 'alpha'],
     'phpdoc_order' => true,
     'simplified_null_return' => true,
     'single_quote' => true,

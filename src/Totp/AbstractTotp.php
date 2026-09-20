@@ -38,12 +38,17 @@ abstract class AbstractTotp
      * Initializes the TOTP instance with optional configuration options.
      *
      * @param array<string, mixed> $options An associative array of configuration options.
-     *        Supported options: 'max_discrepancy' (int).
+     *        Supported options: 'max_discrepancy' (non-negative int).
+     * @throws TotpException If 'max_discrepancy' is not a non-negative integer.
      */
     public function __construct(array $options = [])
     {
         if (isset($options['max_discrepancy'])) {
-            $this->maxDiscrepancy = (int) $options['max_discrepancy'];
+            if (!is_int($options['max_discrepancy']) || $options['max_discrepancy'] < 0) {
+                throw new TotpException(MessageStore::get('configuration.invalid_max_discrepancy'));
+            }
+
+            $this->maxDiscrepancy = $options['max_discrepancy'];
         }
     }
 
@@ -71,8 +76,9 @@ abstract class AbstractTotp
         }
 
         // Warn about weak secrets without throwing
-        $decoded = Base32::decodeUpper($secret);
-        $byteLength = strlen($decoded);
+        // Computed, not decoded: callers decode immediately afterwards for the HMAC,
+        // and decoding here purely to call strlen() doubled the work per operation.
+        $byteLength = $this->decodedByteLength($secret);
 
         if ($byteLength < 20) {
             error_log(MessageStore::get('security.weak_secret_log', $byteLength));
@@ -87,8 +93,41 @@ abstract class AbstractTotp
      */
     protected function validateCode(string $code): void
     {
-        if (preg_match('/^\d{' . $this->digits . '}$/', $code) !== 1) {
+        // \z, not $: PCRE's `$` also matches before a trailing newline, which let
+        // "123456\n" reach hash_equals() and fail as a mismatch rather than a format error.
+        if (preg_match('/\A\d{' . $this->digits . '}\z/', $code) !== 1) {
             throw new TotpException(MessageStore::get('validation.code_format', $this->digits));
+        }
+    }
+
+    /**
+     * Calculates the decoded byte length of a Base32 secret without decoding it.
+     *
+     * Only correct for input that already passed isValidUpper(): the 5-bits-per-symbol
+     * arithmetic assumes a valid alphabet and RFC 4648 padding.
+     *
+     * @param string $secret A secret that passed Base32 format validation.
+     * @return int The number of bytes the secret decodes to.
+     */
+    private function decodedByteLength(string $secret): int
+    {
+        return intdiv(strlen(rtrim($secret, '=')) * 5, 8);
+    }
+
+    /**
+     * Validates that a time slice is within the supported counter domain.
+     *
+     * The domain is non-negative because pack('J') is unsigned: a negative slice would
+     * silently wrap to a huge counter and yield a code for a pre-epoch time instead of
+     * failing. Slice 0 stays valid; it is the replay sentinel.
+     *
+     * @param int $timeSlice The time slice to validate.
+     * @throws TotpException If the time slice is negative.
+     */
+    protected function validateTimeSlice(int $timeSlice): void
+    {
+        if ($timeSlice < 0) {
+            throw new TotpException(MessageStore::get('validation.time_slice_negative'));
         }
     }
 
@@ -104,6 +143,9 @@ abstract class AbstractTotp
 
     /**
      * Packs the time slice into a binary string.
+     *
+     * The 'J' format is the source of this package's 64-bit requirement (declared as
+     * php-64bit in composer.json); PHP does not provide it on 32-bit builds.
      *
      * @param int $timeSlice The time slice to pack.
      * @return string The packed binary string (8 bytes, big-endian unsigned 64-bit integer).

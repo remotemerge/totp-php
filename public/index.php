@@ -10,9 +10,15 @@
 <div class="container mx-auto p-6 max-w-md">
     <!-- Enable 2FA Section -->
     <section class="bg-white p-8 rounded-xl shadow-lg text-center">
-        <h1 class="text-3xl font-bold text-gray-900 mb-4">Account Security</h1>
-        <p class="text-gray-600 mb-6">
-            Secure your account by enabling 2FA. Scan the QR code with your authenticator app.
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">TOTP Demo</h1>
+        <p class="text-gray-600 mb-4">
+            Generate a secret, scan the QR code with your authenticator app, and check a code against it.
+        </p>
+        <p class="text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3 mb-6 text-sm text-left">
+            <strong>Demonstration only.</strong> This page is a stateless TOTP calculator. The secret is
+            generated in the browser session and sent back for verification, so no account is enrolled and
+            no identity is proven. Production verification must load a server-held secret for an
+            authenticated user, rate limit attempts, and persist replay state atomically.
         </p>
 
         <!-- Enable 2FA Button -->

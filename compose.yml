@@ -4,20 +4,21 @@
 
 # Define networks
 networks:
-  rm-pkg-network:
-    name: rm-pkg-network
+  totp-php-network:
+    name: totp-php-network
     driver: bridge
     external: true
 
 # Define services
 services:
-  totp-server:
+  web-server:
     build:
       context: .
       dockerfile: .docker/Dockerfile
       args:
-        USER_ID: ${USER_ID:-1000}
-        GROUP_ID: ${GROUP_ID:-1000}
+        APPLICATION_GID: ${APPLICATION_GID:-1000}
+        APPLICATION_UID: ${APPLICATION_UID:-1000}
+    working_dir: /var/www/html
     volumes:
       - './:/var/www/html'
     ports:
@@ -28,7 +29,7 @@ services:
       SHOW_WELCOME_MESSAGE: false
       XDEBUG_MODE: coverage
     networks:
-      - rm-pkg-network
+      - totp-php-network
     healthcheck:
       test: [ 'CMD', 'curl', '-f', 'http://localhost:8080' ]
       interval: 30s

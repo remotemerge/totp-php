@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Exit on error
-set -e
+# Enable strict error handling
+set -euo pipefail
 
 # Install dependencies
-/usr/local/bin/php /usr/bin/composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
+composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist

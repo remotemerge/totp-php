@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Exception;
+use Iterator;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RemoteMerge\Totp\Totp;
 use RemoteMerge\Totp\TotpException;
+use RuntimeException;
 
 #[CoversClass(Totp::class)]
 final class TotpTest extends TestCase
@@ -394,5 +397,246 @@ final class TotpTest extends TestCase
         $totp = new Totp();
         $totp->configure(['algorithm' => 'SHA256']);
         $this->assertSame('sha256', $totp->getAlgorithm());
+    }
+
+    /**
+     * Test that a failed configure() call leaves every previous value intact.
+     */
+    public function test_configure_failure_does_not_partially_mutate(): void
+    {
+        $totp = new Totp();
+
+        try {
+            $totp->configure(['algorithm' => 'sha512', 'digits' => 7]);
+            $this->fail('configure() should have thrown for digits=7.');
+        } catch (TotpException) {
+            // Expected; the instance must keep its original configuration.
+        }
+
+        $this->assertSame('sha1', $totp->getAlgorithm());
+        $this->assertSame(6, $totp->getDigits());
+        $this->assertSame(30, $totp->getPeriod());
+    }
+
+    /**
+     * Test that a failed period leaves an earlier valid algorithm unapplied.
+     */
+    public function test_configure_failure_on_period_does_not_apply_algorithm(): void
+    {
+        $totp = new Totp();
+
+        try {
+            $totp->configure(['algorithm' => 'sha256', 'period' => 0]);
+            $this->fail('configure() should have thrown for period=0.');
+        } catch (TotpException) {
+            // Expected; the instance must keep its original configuration.
+        }
+
+        $this->assertSame('sha1', $totp->getAlgorithm());
+        $this->assertSame(30, $totp->getPeriod());
+    }
+
+    /**
+     * Test configure rejects a non-string algorithm with a TotpException rather than
+     * a native error or an array-to-string conversion warning.
+     */
+    public function test_configure_rejects_non_string_algorithm(): void
+    {
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('Unsupported hash algorithm.');
+        $totp = new Totp();
+        $totp->configure(['algorithm' => ['sha256']]);
+    }
+
+    /**
+     * Test verifyCodeOnce rejects a code that collides with the last accepted slice.
+     *
+     * Slices 910737 and 910738 both produce 911617 for the RFC 4226 test key, so a
+     * sequentially persisting consumer could otherwise accept the same code twice.
+     *
+     * @throws TotpException
+     */
+    public function test_verify_code_once_rejects_adjacent_slice_collision(): void
+    {
+        $totp = new Totp();
+        $secret = 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ';
+
+        // The collision itself is a fixed property of the key and these two counters.
+        $this->assertSame('911617', $totp->getCode($secret, 910737));
+        $this->assertSame('911617', $totp->getCode($secret, 910738));
+
+        // The guard that closes it: the code belonging to the last accepted slice is
+        // always refused, so a collision at the next slice cannot be accepted twice.
+        $currentSlice = (int) floor(time() / 30);
+        $previousSlice = $currentSlice - 1;
+
+        $this->assertNull(
+            $totp->verifyCodeOnce($secret, $totp->getCode($secret, $previousSlice), $previousSlice),
+        );
+    }
+
+    /**
+     * Test verifyCodeOnce still accepts a genuinely new code for the current slice.
+     *
+     * @throws TotpException
+     */
+    public function test_verify_code_once_accepts_new_slice(): void
+    {
+        $totp = new Totp();
+        $secret = 'JBSWY3DPEHPK3PXP';
+        $currentSlice = (int) floor(time() / 30);
+        $code = $totp->getCode($secret, $currentSlice);
+
+        $this->assertSame($currentSlice, $totp->verifyCodeOnce($secret, $code, $currentSlice - 1));
+    }
+
+    /**
+     * Test verifyCodeOnce treats slice 0 as the initial sentinel rather than an
+     * already accepted login, so a matching current code is still accepted.
+     *
+     * @throws TotpException
+     */
+    public function test_verify_code_once_accepts_first_login_with_zero_sentinel(): void
+    {
+        $totp = new Totp();
+        $secret = 'JBSWY3DPEHPK3PXP';
+        $currentSlice = (int) floor(time() / 30);
+        $code = $totp->getCode($secret, $currentSlice);
+
+        $this->assertSame($currentSlice, $totp->verifyCodeOnce($secret, $code, 0));
+    }
+
+    /**
+     * Test verifyCodeOnce rejects a negative last accepted slice.
+     */
+    public function test_verify_code_once_rejects_negative_last_accepted_slice(): void
+    {
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('The time slice must be zero or a positive integer.');
+        $totp = new Totp();
+        $totp->verifyCodeOnce('JBSWY3DPEHPK3PXP', '123456', -1);
+    }
+
+    /**
+     * Test getCode rejects a negative time slice instead of packing an unsigned wrap.
+     */
+    public function test_get_code_rejects_negative_time_slice(): void
+    {
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('The time slice must be zero or a positive integer.');
+        $totp = new Totp();
+        $totp->getCode('JBSWY3DPEHPK3PXP', -1);
+    }
+
+    /**
+     * Test verifyCode rejects a negative time slice.
+     */
+    public function test_verify_code_rejects_negative_time_slice(): void
+    {
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('The time slice must be zero or a positive integer.');
+        $totp = new Totp();
+        $totp->verifyCode('JBSWY3DPEHPK3PXP', '123456', 1, -1);
+    }
+
+    /**
+     * Test verification near the counter boundaries stays within the integer domain.
+     * @throws TotpException
+     */
+    public function test_verify_code_handles_counter_boundaries(): void
+    {
+        $totp = new Totp();
+        $secret = 'JBSWY3DPEHPK3PXP';
+
+        // The window is clamped at both ends rather than overflowing or going negative.
+        $this->assertFalse($totp->verifyCode($secret, '000000', 1, PHP_INT_MAX));
+        $this->assertFalse($totp->verifyCode($secret, '000000', 1, 0));
+
+        // Slice 0 remains usable and self-consistent.
+        $this->assertTrue($totp->verifyCode($secret, $totp->getCode($secret, 0), 1, 0));
+    }
+
+    /**
+     * Test verifyCode throws for a code carrying a trailing newline.
+     */
+    public function test_verify_code_rejects_trailing_newline_code(): void
+    {
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('The code must be a 6-digit number.');
+        $totp = new Totp();
+        $totp->verifyCode('JBSWY3DPEHPK3PXP', "123456\n");
+    }
+
+    /**
+     * Test generateUri omits Base32 padding from the secret parameter.
+     * @throws TotpException
+     */
+    public function test_generate_uri_omits_secret_padding(): void
+    {
+        $totp = new Totp();
+        // 21 bytes encode to 34 symbols plus six '=' padding characters.
+        $secret = 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGE======';
+
+        $uri = $totp->generateUri($secret, 'user@example.com', 'ExampleService');
+
+        $this->assertStringContainsString('secret=GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQGE&', $uri);
+        $this->assertStringNotContainsString('=====', $uri);
+    }
+
+    /**
+     * Test generateUri produces the exact expected string for default configuration.
+     * @throws TotpException
+     */
+    public function test_generate_uri_exact_output(): void
+    {
+        $totp = new Totp();
+
+        $this->assertSame(
+            'otpauth://totp/Example%20Service:user%40example.com?secret=JBSWY3DPEHPK3PXP'
+            . '&issuer=Example%20Service&algorithm=SHA1&digits=6&period=30',
+            $totp->generateUri('JBSWY3DPEHPK3PXP', 'user@example.com', 'Example Service'),
+        );
+    }
+
+    /**
+     * Test generateUri rejects colons in either label component.
+     */
+    #[DataProvider('colon_label_provider')]
+    public function test_generate_uri_rejects_colon_labels(string $label, string $issuer): void
+    {
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('The label and issuer must not contain a colon.');
+        $totp = new Totp();
+        $totp->generateUri('JBSWY3DPEHPK3PXP', $label, $issuer);
+    }
+
+    /**
+     * @return Iterator<string, array{string, string}>
+     */
+    public static function colon_label_provider(): Iterator
+    {
+        yield 'colon in label' => ['a:b@example.com', 'ExampleService'];
+        yield 'colon in issuer' => ['user@example.com', 'Example:Co'];
+    }
+
+    /**
+     * Test auditSecret reports malformed input without emitting a PHP warning.
+     */
+    public function test_audit_secret_emits_no_php_warning_for_malformed_input(): void
+    {
+        set_error_handler(static function (int $_errno, string $errstr): bool {
+            throw new RuntimeException(sprintf('Unexpected PHP warning: %s', $errstr));
+        });
+
+        try {
+            $totp = new Totp();
+            $result = $totp->auditSecret("AAAAAAA\n");
+
+            $this->assertSame(0, $result['length_bytes']);
+            $this->assertFalse($result['is_strong']);
+            $this->assertStringContainsString('Base32', $result['warnings'][0]);
+        } finally {
+            restore_error_handler();
+        }
     }
 }

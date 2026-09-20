@@ -3,12 +3,21 @@
 declare(strict_types=1);
 
 // Init autoloader
-require_once dirname(__DIR__) . '/vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use RemoteMerge\Totp\TotpException;
 use RemoteMerge\Totp\TotpFactory;
 
+/*
+ * DEMO ONLY — hands out a secret to any caller, enrolling nothing.
+ *
+ * The URI and its QR encode the raw secret, so both are the credential: in
+ * production serve them over TLS to an authenticated user only, and store the
+ * secret encrypted rather than returning it.
+ */
+
 header('Content-Type: application/json');
+header('Cache-Control: no-store');
 
 try {
     // Generate Secret Key

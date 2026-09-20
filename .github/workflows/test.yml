@@ -22,9 +22,6 @@ permissions:
 
 jobs:
   test:
-    # Skip workflow for Dependabot PRs
-    if: github.actor != 'dependabot[bot]'
-
     # Test matrix across multiple OS and PHP versions
     runs-on: ${{ matrix.os }}
 
@@ -35,41 +32,63 @@ jobs:
       # Run all matrix combinations to completion
       fail-fast: false
       matrix:
-        os: [ ubuntu-24.04, windows-2025-vs2026, macos-26-intel ]
-        php: [ "8.1", "8.2", "8.3", "8.4", "8.5" ]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        php: ["8.1", "8.2", "8.3", "8.4", "8.5"]
 
     env:
       OS: ${{ matrix.os }}
       PHP: ${{ matrix.php }}
 
     steps:
-      - name: "Checkout code"
-        uses: actions/checkout@v6
-        with:
-          # Required for SonarQube analysis
-          fetch-depth: 0
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: "Set Xdebug coverage"
-        run: echo "XDEBUG_MODE=coverage" >> $GITHUB_ENV
-
-      - name: "Setup PHP"
-        uses: shivammathur/setup-php@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         with:
           php-version: ${{ matrix.php }}
-          extensions: xdebug
-          coverage: xdebug
+          coverage: none
 
-      - name: "Display PHP and Composer version information"
+      - name: Display PHP and Composer versions
         run: php --version && composer --version
 
-      - name: "Install dependencies"
+      - name: Install dependencies
         run: composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
 
-      - name: "Run PHPUnit tests"
-        run: ./vendor/bin/phpunit
+      - name: Run PHPUnit tests
+        run: ./vendor/bin/phpunit --no-coverage
 
-      - name: "Run SonarQube Scan"
-        if: ${{ !cancelled() && matrix.os == 'ubuntu-24.04' && matrix.php == '8.5' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository) }}
-        uses: SonarSource/sonarqube-scan-action@v8
+  # Reproduce the local quality gates on a single runner. These need no secrets,
+  # so they also run for Dependabot pull requests.
+  analysis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: "8.1"
+          coverage: none
+
+      - name: Validate Composer configuration
+        run: composer validate --strict
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
+
+      - name: Audit locked dependencies
+        run: composer audit --locked
+
+      - name: Run PHPStan
+        run: ./vendor/bin/phpstan analyse --no-progress
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          XDEBUG_MODE: off
+
+      - name: Check coding standards
+        run: ./vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no
+        env:
+          XDEBUG_MODE: off

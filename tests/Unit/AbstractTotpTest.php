@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use Iterator;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use ReflectionException;
@@ -12,12 +14,16 @@ use RemoteMerge\Message\MessageStore;
 use RemoteMerge\Totp\AbstractTotp;
 use RemoteMerge\Totp\Totp;
 use RemoteMerge\Totp\TotpException;
+use RuntimeException;
 
 #[CoversClass(AbstractTotp::class)]
 final class AbstractTotpTest extends TestCase
 {
     private Totp $totp;
 
+    /**
+     * @var ReflectionClass<Totp>
+     */
     private ReflectionClass $reflectionClass;
 
     protected function setUp(): void
@@ -220,8 +226,9 @@ final class AbstractTotpTest extends TestCase
         $reflectionMethod = $this->reflectionClass->getMethod('packTimeSlice');
 
         $packed = $reflectionMethod->invoke($this->totp, 1234567890);
-        $this->assertSame(8, strlen((string) $packed));
-        $this->assertEquals("\x00\x00\x00\x00\x49\x96\x02\xd2", $packed);
+        $this->assertIsString($packed);
+        $this->assertSame(8, strlen($packed));
+        $this->assertSame("\x00\x00\x00\x00\x49\x96\x02\xd2", $packed);
     }
 
     /**
@@ -247,18 +254,120 @@ final class AbstractTotpTest extends TestCase
     public function test_validate_secret_logs_warning_for_weak_secret(): void
     {
         $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
-        set_error_handler(null);
-        $previousHandler = set_error_handler(null);
-        ini_set('error_log', '/dev/null');
+        $logFile = tempnam(sys_get_temp_dir(), 'totp-log-');
+        $this->assertIsString($logFile);
+        $previousLog = ini_get('error_log');
 
-        // Use output buffering to capture error_log output sent to stderr/stdout
-        // Instead, verify indirectly: no exception is thrown (the log call is non-throwing)
-        $this->expectNotToPerformAssertions();
-        $reflectionMethod->invoke($this->totp, 'ABCDEFGH');
+        try {
+            ini_set('error_log', $logFile);
+            $reflectionMethod->invoke($this->totp, 'ABCDEFGH');
 
-        if ($previousHandler !== null) {
-            set_error_handler($previousHandler);
+            $logged = (string) file_get_contents($logFile);
+            $this->assertStringContainsString('Weak secret detected (5 bytes', $logged);
+            // The log must describe the length only; it must never echo the secret.
+            $this->assertStringNotContainsString('ABCDEFGH', $logged);
+        } finally {
+            ini_set('error_log', $previousLog === false ? '' : $previousLog);
+            unlink($logFile);
         }
+    }
+
+    /**
+     * Test validateSecret emits no PHP warning for malformed newline-terminated input.
+     *
+     * @throws ReflectionException
+     */
+    public function test_validate_secret_rejects_trailing_newline_without_php_warning(): void
+    {
+        $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
+        set_error_handler(static function (int $_errno, string $errstr): bool {
+            throw new RuntimeException(sprintf('Unexpected PHP warning: %s', $errstr));
+        });
+
+        try {
+            $this->expectException(TotpException::class);
+            $this->expectExceptionMessage('The secret key contains invalid characters.');
+            $reflectionMethod->invoke($this->totp, "AAAAAAA\n");
+        } finally {
+            restore_error_handler();
+        }
+    }
+
+    /**
+     * Test validateTimeSlice accepts the non-negative counter domain.
+     *
+     * @throws ReflectionException
+     */
+    public function test_validate_time_slice_accepts_non_negative(): void
+    {
+        $reflectionMethod = $this->reflectionClass->getMethod('validateTimeSlice');
+
+        $this->expectNotToPerformAssertions();
+        $reflectionMethod->invoke($this->totp, 0);
+        $reflectionMethod->invoke($this->totp, 1);
+        $reflectionMethod->invoke($this->totp, PHP_INT_MAX);
+    }
+
+    /**
+     * Test validateTimeSlice rejects a negative counter.
+     *
+     * @throws ReflectionException
+     */
+    public function test_validate_time_slice_rejects_negative(): void
+    {
+        $reflectionMethod = $this->reflectionClass->getMethod('validateTimeSlice');
+
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('The time slice must be zero or a positive integer.');
+        $reflectionMethod->invoke($this->totp, -1);
+    }
+
+    /**
+     * Test validateCode rejects a well-formed code followed by a newline.
+     *
+     * @throws ReflectionException
+     */
+    public function test_validate_code_rejects_trailing_newline(): void
+    {
+        $reflectionMethod = $this->reflectionClass->getMethod('validateCode');
+
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('The code must be a 6-digit number.');
+        $reflectionMethod->invoke($this->totp, "123456\n");
+    }
+
+    /**
+     * Test that the constructor rejects non-integer and negative max_discrepancy values.
+     */
+    #[DataProvider('invalid_max_discrepancy_provider')]
+    public function test_constructor_rejects_invalid_max_discrepancy(mixed $maxDiscrepancy): void
+    {
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('Max discrepancy must be a non-negative integer.');
+        new Totp(['max_discrepancy' => $maxDiscrepancy]);
+    }
+
+    /**
+     * @return Iterator<string, array{mixed}>
+     */
+    public static function invalid_max_discrepancy_provider(): Iterator
+    {
+        yield 'negative' => [-1];
+        yield 'numeric string' => ['2'];
+        yield 'partially numeric string' => ['2garbage'];
+        yield 'float' => [2.9];
+        yield 'bool' => [true];
+        yield 'array' => [[]];
+    }
+
+    /**
+     * Test that zero is a valid max_discrepancy and is not treated as unset.
+     */
+    public function test_constructor_accepts_zero_max_discrepancy(): void
+    {
+        $totp = new Totp(['max_discrepancy' => 0]);
+        $reflectionProperty = $this->reflectionClass->getProperty('maxDiscrepancy');
+        $this->assertSame(0, $reflectionProperty->getValue($totp));
     }
 
     /**
