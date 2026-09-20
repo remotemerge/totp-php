@@ -92,7 +92,9 @@ abstract class AbstractTotp
      */
     protected function validateCode(string $code): void
     {
-        if (preg_match('/^\d{' . $this->digits . '}$/', $code) !== 1) {
+        // \z, not $: PCRE's `$` also matches before a trailing newline, which let
+        // "123456\n" reach hash_equals() and fail as a mismatch rather than a format error.
+        if (preg_match('/\A\d{' . $this->digits . '}\z/', $code) !== 1) {
             throw new TotpException(MessageStore::get('validation.code_format', $this->digits));
         }
     }
