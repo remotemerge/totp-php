@@ -33,31 +33,31 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        php: [ "8.1", "8.2", "8.3", "8.4", "8.5" ]
+        php: ["8.1", "8.2", "8.3", "8.4", "8.5"]
 
     env:
       OS: ${{ matrix.os }}
       PHP: ${{ matrix.php }}
 
     steps:
-      - name: "Checkout code"
+      - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: "Set Xdebug coverage"
+      - name: Set Xdebug coverage
         run: echo "XDEBUG_MODE=coverage" >> $GITHUB_ENV
 
-      - name: "Setup PHP"
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           extensions: xdebug
           coverage: xdebug
 
-      - name: "Display PHP and Composer version information"
+      - name: Display PHP and Composer versions
         run: php --version && composer --version
 
-      - name: "Install dependencies"
+      - name: Install dependencies
         run: composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
 
-      - name: "Run PHPUnit tests"
+      - name: Run PHPUnit tests
         run: ./vendor/bin/phpunit
