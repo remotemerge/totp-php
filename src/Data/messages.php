@@ -25,6 +25,7 @@ return [
         'invalid_digits' => 'Digits must be either 6 or 8.',
         'invalid_period' => 'Period must be a positive integer.',
         'invalid_discrepancy' => 'Discrepancy must be between 0 and %d.',
+        'invalid_max_discrepancy' => 'Max discrepancy must be a non-negative integer.',
     ],
 
     /**
