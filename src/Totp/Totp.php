@@ -19,18 +19,22 @@ final class Totp extends AbstractTotp implements TotpInterface
      */
     public function configure(array $options): void
     {
+        // Staged so a later invalid option cannot leave an earlier one applied; a
+        // caller that catches the exception keeps a usable instance.
+        $algorithm = $this->algorithm;
+        $digits = $this->digits;
+        $period = $this->period;
+
         if (isset($options['algorithm'])) {
             if (!is_string($options['algorithm'])) {
                 throw new TotpException(MessageStore::get('configuration.unsupported_algorithm'));
             }
 
-            $selectedAlgorithm = strtolower($options['algorithm']);
+            $algorithm = strtolower($options['algorithm']);
 
-            if (!in_array($selectedAlgorithm, self::SUPPORTED_ALGORITHMS, true)) {
+            if (!in_array($algorithm, self::SUPPORTED_ALGORITHMS, true)) {
                 throw new TotpException(MessageStore::get('configuration.unsupported_algorithm'));
             }
-
-            $this->algorithm = $selectedAlgorithm;
         }
 
         if (isset($options['digits'])) {
@@ -38,7 +42,7 @@ final class Totp extends AbstractTotp implements TotpInterface
                 throw new TotpException(MessageStore::get('configuration.invalid_digits'));
             }
 
-            $this->digits = $options['digits'];
+            $digits = $options['digits'];
         }
 
         if (isset($options['period'])) {
@@ -46,8 +50,12 @@ final class Totp extends AbstractTotp implements TotpInterface
                 throw new TotpException(MessageStore::get('configuration.invalid_period'));
             }
 
-            $this->period = $options['period'];
+            $period = $options['period'];
         }
+
+        $this->algorithm = $algorithm;
+        $this->digits = $digits;
+        $this->period = $period;
     }
 
     /**
