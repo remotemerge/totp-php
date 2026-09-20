@@ -524,4 +524,15 @@ final class TotpTest extends TestCase
         $totp = new Totp();
         $totp->getCode('JBSWY3DPEHPK3PXP', -1);
     }
+
+    /**
+     * Test verifyCode rejects a negative time slice.
+     */
+    public function test_verify_code_rejects_negative_time_slice(): void
+    {
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('The time slice must be zero or a positive integer.');
+        $totp = new Totp();
+        $totp->verifyCode('JBSWY3DPEHPK3PXP', '123456', 1, -1);
+    }
 }
