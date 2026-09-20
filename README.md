@@ -391,6 +391,8 @@ $isValid = $totp->verifyCode($secret, $code, 1);
 $totp->verifyCode($secret, $code, 3);
 ```
 
+`max_discrepancy` must be a non-negative integer; anything else throws a `TotpException` at construction rather than being silently coerced. It is a **ceiling**, not the active window — the default window remains the `±1` default of the `$discrepancy` argument. Widening the window multiplies both the HMAC work per attempt and the number of codes an attacker can guess against, so keep per-account attempt limits in the application.
+
 ### **Generate a QR Code Image**
 
 Generate the `otpauth://` URI on the backend, then render the QR image locally in the browser. Avoid sending TOTP setup URIs to third-party QR image APIs because the URI contains the user's secret.
