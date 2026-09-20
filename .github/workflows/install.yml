@@ -57,3 +57,6 @@ jobs:
         run: composer require "remotemerge/totp-php:${RELEASE_TAG#v}"
         env:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
+
+      - name: Display the installed version
+        run: composer show remotemerge/totp-php
