@@ -50,5 +50,10 @@ jobs:
       - name: Initialize a scratch project
         run: composer init --no-interaction --stability=stable
 
-      - name: "Install dependencies"
-        run: composer require remotemerge/totp-php
+      # Pin to the tag that triggered this run, so a registry publication delay
+      # fails the job instead of silently smoke-testing an earlier release.
+      - name: Install the released version
+        shell: bash
+        run: composer require "remotemerge/totp-php:${RELEASE_TAG#v}"
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
