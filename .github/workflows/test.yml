@@ -57,3 +57,25 @@ jobs:
 
       - name: Run PHPUnit tests
         run: ./vendor/bin/phpunit --no-coverage
+
+  # Reproduce the local quality gates on a single runner. These need no secrets,
+  # so they also run for Dependabot pull requests.
+  analysis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: "8.1"
+          coverage: none
+
+      - name: Validate Composer configuration
+        run: composer validate --strict
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
