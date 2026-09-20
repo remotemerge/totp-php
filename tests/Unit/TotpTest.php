@@ -471,4 +471,35 @@ final class TotpTest extends TestCase
             $totp->verifyCodeOnce($secret, $totp->getCode($secret, $previousSlice), $previousSlice),
         );
     }
+
+    /**
+     * Test verifyCodeOnce still accepts a genuinely new code for the current slice.
+     *
+     * @throws TotpException
+     */
+    public function test_verify_code_once_accepts_new_slice(): void
+    {
+        $totp = new Totp();
+        $secret = 'JBSWY3DPEHPK3PXP';
+        $currentSlice = (int) floor(time() / 30);
+        $code = $totp->getCode($secret, $currentSlice);
+
+        $this->assertSame($currentSlice, $totp->verifyCodeOnce($secret, $code, $currentSlice - 1));
+    }
+
+    /**
+     * Test verifyCodeOnce treats slice 0 as the initial sentinel rather than an
+     * already accepted login, so a matching current code is still accepted.
+     *
+     * @throws TotpException
+     */
+    public function test_verify_code_once_accepts_first_login_with_zero_sentinel(): void
+    {
+        $totp = new Totp();
+        $secret = 'JBSWY3DPEHPK3PXP';
+        $currentSlice = (int) floor(time() / 30);
+        $code = $totp->getCode($secret, $currentSlice);
+
+        $this->assertSame($currentSlice, $totp->verifyCodeOnce($secret, $code, 0));
+    }
 }
