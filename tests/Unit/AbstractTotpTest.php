@@ -321,6 +321,20 @@ final class AbstractTotpTest extends TestCase
     }
 
     /**
+     * Test validateCode rejects a well-formed code followed by a newline.
+     *
+     * @throws ReflectionException
+     */
+    public function test_validate_code_rejects_trailing_newline(): void
+    {
+        $reflectionMethod = $this->reflectionClass->getMethod('validateCode');
+
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('The code must be a 6-digit number.');
+        $reflectionMethod->invoke($this->totp, "123456\n");
+    }
+
+    /**
      * Test validateSecret does not emit a warning for a strong secret (>= 20 bytes).
      *
      * @throws ReflectionException
