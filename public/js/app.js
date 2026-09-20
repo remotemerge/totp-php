@@ -43,7 +43,9 @@ document.getElementById('verifyCode').addEventListener('click', async () => {
     resultDiv.classList.remove('text-red-500');
     resultDiv.classList.add('text-green-500');
   } else {
-    resultDiv.textContent = '❌ Invalid Code. Please try again.';
+    resultDiv.textContent = data.error
+      ? `❌ ${data.error}`
+      : '❌ Invalid Code. Please try again.';
     resultDiv.classList.remove('text-green-500');
     resultDiv.classList.add('text-red-500');
   }
