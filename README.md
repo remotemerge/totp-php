@@ -98,7 +98,7 @@ TOTP PHP follows **RFC 6238** for time-based one-time passwords, validates secre
 
 ## **Get Started in Minutes**
 
-Adding TOTP PHP to a project is quick and easy. The library requires **PHP 8.1** or higher.
+Adding TOTP PHP to a project is quick and easy. The library requires **PHP 8.1** or higher on a **64-bit** PHP build. Counter packing uses the 64-bit `J` format, which PHP does not provide on 32-bit builds, so Composer declares `php-64bit` and installation fails early on unsupported platforms rather than failing inside authentication.
 
 ### **Installation**
 
