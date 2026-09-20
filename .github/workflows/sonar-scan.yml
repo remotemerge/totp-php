@@ -15,6 +15,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          # Sonar needs full history for blame and new-code detection.
+          fetch-depth: 0
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
