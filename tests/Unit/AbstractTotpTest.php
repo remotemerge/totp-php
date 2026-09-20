@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit;
 
+use Iterator;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use ReflectionException;
@@ -332,6 +334,30 @@ final class AbstractTotpTest extends TestCase
         $this->expectException(TotpException::class);
         $this->expectExceptionMessage('The code must be a 6-digit number.');
         $reflectionMethod->invoke($this->totp, "123456\n");
+    }
+
+    /**
+     * Test that the constructor rejects non-integer and negative max_discrepancy values.
+     */
+    #[DataProvider('invalid_max_discrepancy_provider')]
+    public function test_constructor_rejects_invalid_max_discrepancy(mixed $maxDiscrepancy): void
+    {
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('Max discrepancy must be a non-negative integer.');
+        new Totp(['max_discrepancy' => $maxDiscrepancy]);
+    }
+
+    /**
+     * @return Iterator<string, array{mixed}>
+     */
+    public static function invalid_max_discrepancy_provider(): Iterator
+    {
+        yield 'negative' => [-1];
+        yield 'numeric string' => ['2'];
+        yield 'partially numeric string' => ['2garbage'];
+        yield 'float' => [2.9];
+        yield 'bool' => [true];
+        yield 'array' => [[]];
     }
 
     /**
