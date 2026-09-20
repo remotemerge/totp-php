@@ -21,9 +21,30 @@ header('Content-Type: application/json');
 header('Cache-Control: no-store');
 
 try {
+    $body = file_get_contents('php://input');
+
+    if ($body === false || $body === '') {
+        http_response_code(400);
+        echo json_encode(['error' => 'A JSON request body is required.'], JSON_THROW_ON_ERROR);
+        exit;
+    }
+
+    try {
+        $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+    } catch (JsonException) {
+        http_response_code(400);
+        echo json_encode(['error' => 'The request body is not valid JSON.'], JSON_THROW_ON_ERROR);
+        exit;
+    }
+
+    if (!is_array($data) || !is_string($data['secret'] ?? null) || !is_string($data['code'] ?? null)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Both "secret" and "code" must be supplied as strings.'], JSON_THROW_ON_ERROR);
+        exit;
+    }
+
     // Generate Secret Key
     $totp = TotpFactory::create();
-    $data = json_decode(file_get_contents('php://input'), true, 512, JSON_THROW_ON_ERROR);
     echo json_encode(['valid' => $totp->verifyCode($data['secret'], $data['code'], 0)], JSON_THROW_ON_ERROR);
     exit;
 } catch (TotpException $totpException) {
