@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use Exception;
+use Iterator;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RemoteMerge\Totp\Totp;
 use RemoteMerge\Totp\TotpException;
@@ -593,5 +595,26 @@ final class TotpTest extends TestCase
             . '&issuer=Example%20Service&algorithm=SHA1&digits=6&period=30',
             $totp->generateUri('JBSWY3DPEHPK3PXP', 'user@example.com', 'Example Service'),
         );
+    }
+
+    /**
+     * Test generateUri rejects colons in either label component.
+     */
+    #[DataProvider('colon_label_provider')]
+    public function test_generate_uri_rejects_colon_labels(string $label, string $issuer): void
+    {
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('The label and issuer must not contain a colon.');
+        $totp = new Totp();
+        $totp->generateUri('JBSWY3DPEHPK3PXP', $label, $issuer);
+    }
+
+    /**
+     * @return Iterator<string, array{string, string}>
+     */
+    public static function colon_label_provider(): Iterator
+    {
+        yield 'colon in label' => ['a:b@example.com', 'ExampleService'];
+        yield 'colon in issuer' => ['user@example.com', 'Example:Co'];
     }
 }
