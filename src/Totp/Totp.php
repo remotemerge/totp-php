@@ -210,12 +210,13 @@ final class Totp extends AbstractTotp implements TotpInterface
             return null;
         }
 
-        for ($offset = -$discrepancy; $offset <= $discrepancy; ++$offset) {
-            $candidateSlice = $currentSlice + $offset;
+        $firstSlice = max($lastAcceptedSlice + 1, $currentSlice - $discrepancy, 0);
+        $lastSlice = $currentSlice + min($discrepancy, PHP_INT_MAX - $currentSlice);
 
-            if ($candidateSlice <= $lastAcceptedSlice) {
-                continue;
-            }
+        // Counting steps keeps the candidate an int. Incrementing past PHP_INT_MAX
+        // silently yields a float, which the strictly typed HMAC helper rejects.
+        for ($step = 0, $steps = $lastSlice - $firstSlice; $step <= $steps; ++$step) {
+            $candidateSlice = $firstSlice + $step;
 
             if (hash_equals($this->getCodeFromDecodedSecret($decodedSecret, $candidateSlice), $code)) {
                 return $candidateSlice;
