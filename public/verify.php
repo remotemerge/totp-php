@@ -8,6 +8,15 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use RemoteMerge\Totp\TotpException;
 use RemoteMerge\Totp\TotpFactory;
 
+/*
+ * DEMO ONLY — not an authentication endpoint.
+ *
+ * The caller supplies the secret, so it controls both sides of the comparison and
+ * a match proves nothing. Real verification loads the secret server-side for an
+ * already-identified user, rate limits, and uses verifyCodeOnce() with an atomic
+ * compare-and-set on the stored slice.
+ */
+
 header('Content-Type: application/json');
 
 try {
