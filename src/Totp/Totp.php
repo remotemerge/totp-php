@@ -112,6 +112,7 @@ final class Totp extends AbstractTotp implements TotpInterface
         $this->validateSecret($secret);
 
         $timeSlice ??= $this->getCurrentTimeSlice();
+        $this->validateTimeSlice($timeSlice);
         $decodedSecret = Base32::decodeUpper($secret);
 
         return $this->getCodeFromDecodedSecret($decodedSecret, $timeSlice);
