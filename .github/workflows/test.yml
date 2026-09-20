@@ -22,9 +22,6 @@ permissions:
 
 jobs:
   test:
-    # Skip workflow for Dependabot PRs
-    if: github.actor != 'dependabot[bot]'
-
     # Test matrix across multiple OS and PHP versions
     runs-on: ${{ matrix.os }}
 
