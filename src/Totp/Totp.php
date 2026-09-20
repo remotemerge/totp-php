@@ -289,9 +289,9 @@ final class Totp extends AbstractTotp implements TotpInterface
      * Generates a TOTP URI for QR code generation.
      *
      * @param string $secret The secret key in Base32 format.
-     * @param string $label The label for the account (e.g., user@example.com).
-     * @param string $issuer The issuer of the TOTP (e.g., the service name).
-     * @throws TotpException If the secret key is invalid.
+     * @param string $label The label for the account (e.g., user@example.com). Must not contain a colon.
+     * @param string $issuer The issuer of the TOTP (e.g., the service name). Must not contain a colon.
+     * @throws TotpException If the secret key is invalid or a label component contains a colon.
      * @return string The TOTP URI in the format `otpauth://totp/{issuer}:{label}?secret={secret}&issuer={issuer}&algorithm={ALGORITHM}&digits={digits}&period={period}`.
      *               The algorithm is returned in uppercase (e.g., SHA1, SHA256, SHA512) per the Key URI Format specification.
      *               Trailing `=` padding is omitted from the secret, as recommended by the Key URI Format.
@@ -299,6 +299,12 @@ final class Totp extends AbstractTotp implements TotpInterface
     public function generateUri(string $secret, string $label, string $issuer): string
     {
         $this->validateSecret($secret);
+
+        // The colon delimits issuer from account in the label, so one inside either
+        // value would re-split the label and misattribute the account in the app.
+        if (str_contains($label, ':') || str_contains($issuer, ':')) {
+            throw new TotpException(MessageStore::get('validation.label_colon'));
+        }
 
         $strUri = 'otpauth://totp/%s:%s?secret=%s&issuer=%s&algorithm=%s&digits=%d&period=%d';
         $encodedLabel = rawurlencode($label);
