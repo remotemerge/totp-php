@@ -294,6 +294,7 @@ final class Totp extends AbstractTotp implements TotpInterface
      * @throws TotpException If the secret key is invalid.
      * @return string The TOTP URI in the format `otpauth://totp/{issuer}:{label}?secret={secret}&issuer={issuer}&algorithm={ALGORITHM}&digits={digits}&period={period}`.
      *               The algorithm is returned in uppercase (e.g., SHA1, SHA256, SHA512) per the Key URI Format specification.
+     *               Trailing `=` padding is omitted from the secret, as recommended by the Key URI Format.
      */
     public function generateUri(string $secret, string $label, string $issuer): string
     {
@@ -303,6 +304,6 @@ final class Totp extends AbstractTotp implements TotpInterface
         $encodedLabel = rawurlencode($label);
         $encodedIssuer = rawurlencode($issuer);
 
-        return sprintf($strUri, $encodedIssuer, $encodedLabel, $secret, $encodedIssuer, strtoupper($this->algorithm), $this->digits, $this->period);
+        return sprintf($strUri, $encodedIssuer, $encodedLabel, rtrim($secret, '='), $encodedIssuer, strtoupper($this->algorithm), $this->digits, $this->period);
     }
 }
