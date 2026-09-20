@@ -203,6 +203,8 @@ echo "QR Code URI: $uri\n";
 QR Code URI: otpauth://totp/YourApp:user%40example.com?secret=MHYPSU6HI7UUMFTQD24XVUUQR7JLKV6Y&issuer=YourApp&algorithm=SHA1&digits=6&period=30
 ```
 
+Per the [Key URI Format](https://github.com/google/google-authenticator/wiki/Key-Uri-Format), trailing `=` padding is omitted from the `secret` parameter, and neither the label nor the issuer may contain a colon — that character separates the two components, so a colon in either throws a `TotpException`. The stored secret itself is never rewritten.
+
 ---
 
 ## **Customization Options**
