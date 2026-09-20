@@ -16,6 +16,7 @@ return [
         'secret_characters' => 'The secret key contains invalid characters.',
         'code_format' => 'The code must be a %d-digit number.',
         'time_slice_negative' => 'The time slice must be zero or a positive integer.',
+        'label_colon' => 'The label and issuer must not contain a colon.',
     ],
 
     /**
