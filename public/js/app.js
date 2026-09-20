@@ -39,7 +39,7 @@ document.getElementById('verifyCode').addEventListener('click', async () => {
   const resultDiv = document.getElementById('verificationResult');
   resultDiv.classList.remove('hidden');
   if (data.valid) {
-    resultDiv.textContent = '✅ 2FA Enabled Successfully!';
+    resultDiv.textContent = '✅ Code verified against this secret. (Demo only — no account was enrolled.)';
     resultDiv.classList.remove('text-red-500');
     resultDiv.classList.add('text-green-500');
   } else {
