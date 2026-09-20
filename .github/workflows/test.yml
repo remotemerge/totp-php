@@ -87,3 +87,8 @@ jobs:
         run: ./vendor/bin/phpstan analyse --no-progress
         env:
           XDEBUG_MODE: off
+
+      - name: Check coding standards
+        run: ./vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no
+        env:
+          XDEBUG_MODE: off
