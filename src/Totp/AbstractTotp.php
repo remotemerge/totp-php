@@ -76,8 +76,9 @@ abstract class AbstractTotp
         }
 
         // Warn about weak secrets without throwing
-        $decoded = Base32::decodeUpper($secret);
-        $byteLength = strlen($decoded);
+        // Computed, not decoded: callers decode immediately afterwards for the HMAC,
+        // and decoding here purely to call strlen() doubled the work per operation.
+        $byteLength = $this->decodedByteLength($secret);
 
         if ($byteLength < 20) {
             error_log(MessageStore::get('security.weak_secret_log', $byteLength));
@@ -97,6 +98,20 @@ abstract class AbstractTotp
         if (preg_match('/\A\d{' . $this->digits . '}\z/', $code) !== 1) {
             throw new TotpException(MessageStore::get('validation.code_format', $this->digits));
         }
+    }
+
+    /**
+     * Calculates the decoded byte length of a Base32 secret without decoding it.
+     *
+     * Only correct for input that already passed isValidUpper(): the 5-bits-per-symbol
+     * arithmetic assumes a valid alphabet and RFC 4648 padding.
+     *
+     * @param string $secret A secret that passed Base32 format validation.
+     * @return int The number of bytes the secret decodes to.
+     */
+    private function decodedByteLength(string $secret): int
+    {
+        return intdiv(strlen(rtrim($secret, '=')) * 5, 8);
     }
 
     /**
