@@ -316,6 +316,22 @@ if ($newSlice === null) {
 }
 ```
 
+#### **Persist the slice atomically**
+
+The library is stateless: it compares the slice you pass in and returns the slice you should store. It cannot lock anything on your behalf. The read-verify-write sequence above is a race — two concurrent requests can read the same `last_slice`, both verify the same code, and both succeed.
+
+Make the update conditional on the value you read, and grant the session only when exactly one row changes:
+
+```sql
+UPDATE user_totp
+SET last_slice = :matched
+WHERE user_id = :user
+  AND credential_version = :version
+  AND last_slice = :observed;
+```
+
+`:matched` is the slice returned by `verifyCodeOnce()`, and `:observed` is the value read before verification. Treat zero affected rows, a rollback, or a failed write as a failed authentication. Reset the stored slice when the secret is rotated, and note that changing `period` changes what a stored slice means, so migrate that state alongside the credential configuration.
+
 ### **Secret Security Audit**
 
 Use `auditSecret()` to inspect a secret key before storing or using it. The method never throws — all diagnostics are returned in the result array:
