@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RemoteMerge\Totp\Totp;
 use RemoteMerge\Totp\TotpException;
+use RuntimeException;
 
 #[CoversClass(Totp::class)]
 final class TotpTest extends TestCase
@@ -616,5 +617,26 @@ final class TotpTest extends TestCase
     {
         yield 'colon in label' => ['a:b@example.com', 'ExampleService'];
         yield 'colon in issuer' => ['user@example.com', 'Example:Co'];
+    }
+
+    /**
+     * Test auditSecret reports malformed input without emitting a PHP warning.
+     */
+    public function test_audit_secret_emits_no_php_warning_for_malformed_input(): void
+    {
+        set_error_handler(static function (int $_errno, string $errstr): bool {
+            throw new RuntimeException(sprintf('Unexpected PHP warning: %s', $errstr));
+        });
+
+        try {
+            $totp = new Totp();
+            $result = $totp->auditSecret("AAAAAAA\n");
+
+            $this->assertSame(0, $result['length_bytes']);
+            $this->assertFalse($result['is_strong']);
+            $this->assertStringContainsString('Base32', $result['warnings'][0]);
+        } finally {
+            restore_error_handler();
+        }
     }
 }
