@@ -79,3 +79,6 @@ jobs:
 
       - name: Install dependencies
         run: composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
+
+      - name: Audit locked dependencies
+        run: composer audit --locked
