@@ -332,6 +332,14 @@ WHERE user_id = :user
 
 `:matched` is the slice returned by `verifyCodeOnce()`, and `:observed` is the value read before verification. Treat zero affected rows, a rollback, or a failed write as a failed authentication. Reset the stored slice when the secret is rotated, and note that changing `period` changes what a stored slice means, so migrate that state alongside the credential configuration.
 
+#### **What this does and does not guarantee**
+
+`verifyCodeOnce()` guarantees that accepted slices strictly increase, and additionally rejects a code identical to the one produced by the last accepted slice. That second check matters because adjacent slices can coincidentally produce the same code — for the RFC test key, slices `910737` and `910738` both yield `911617`, which sequential persistence alone would accept twice.
+
+A single stored slice cannot represent every code ever accepted. If you must reject any repeated code for the whole time it is valid, keep an atomic, expiring record keyed by credential and a protected fingerprint of the accepted code. Also note that `verifyCode()` holds no replay state at all — it will accept the same valid code repeatedly.
+
+Slice `0` is the documented initial sentinel and is treated as "no previous login", so a first login is not blocked. A negative slice is rejected with a `TotpException`.
+
 ### **Secret Security Audit**
 
 Use `auditSecret()` to inspect a secret key before storing or using it. The method never throws — all diagnostics are returned in the result array:
