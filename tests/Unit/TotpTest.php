@@ -535,4 +535,21 @@ final class TotpTest extends TestCase
         $totp = new Totp();
         $totp->verifyCode('JBSWY3DPEHPK3PXP', '123456', 1, -1);
     }
+
+    /**
+     * Test verification near the counter boundaries stays within the integer domain.
+     * @throws TotpException
+     */
+    public function test_verify_code_handles_counter_boundaries(): void
+    {
+        $totp = new Totp();
+        $secret = 'JBSWY3DPEHPK3PXP';
+
+        // The window is clamped at both ends rather than overflowing or going negative.
+        $this->assertFalse($totp->verifyCode($secret, '000000', 1, PHP_INT_MAX));
+        $this->assertFalse($totp->verifyCode($secret, '000000', 1, 0));
+
+        // Slice 0 remains usable and self-consistent.
+        $this->assertTrue($totp->verifyCode($secret, $totp->getCode($secret, 0), 1, 0));
+    }
 }
