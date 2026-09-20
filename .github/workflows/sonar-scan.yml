@@ -7,6 +7,15 @@ on:
   schedule:
     - cron: "0 0 * * 1"
 
+# Minimum required permissions for security
+permissions:
+  contents: read
+
+# Cancel in-progress runs when new commits are pushed
+concurrency:
+  group: sonar-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     name: Test and scan
