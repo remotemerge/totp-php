@@ -43,15 +43,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Set Xdebug coverage
-        run: echo "XDEBUG_MODE=coverage" >> $GITHUB_ENV
-
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: xdebug
-          coverage: xdebug
+          coverage: none
 
       - name: Display PHP and Composer versions
         run: php --version && composer --version
@@ -60,4 +56,4 @@ jobs:
         run: composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
 
       - name: Run PHPUnit tests
-        run: ./vendor/bin/phpunit
+        run: ./vendor/bin/phpunit --no-coverage
