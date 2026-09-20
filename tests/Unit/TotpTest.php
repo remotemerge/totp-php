@@ -444,4 +444,31 @@ final class TotpTest extends TestCase
         $totp = new Totp();
         $totp->configure(['algorithm' => ['sha256']]);
     }
+
+    /**
+     * Test verifyCodeOnce rejects a code that collides with the last accepted slice.
+     *
+     * Slices 910737 and 910738 both produce 911617 for the RFC 4226 test key, so a
+     * sequentially persisting consumer could otherwise accept the same code twice.
+     *
+     * @throws TotpException
+     */
+    public function test_verify_code_once_rejects_adjacent_slice_collision(): void
+    {
+        $totp = new Totp();
+        $secret = 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ';
+
+        // The collision itself is a fixed property of the key and these two counters.
+        $this->assertSame('911617', $totp->getCode($secret, 910737));
+        $this->assertSame('911617', $totp->getCode($secret, 910738));
+
+        // The guard that closes it: the code belonging to the last accepted slice is
+        // always refused, so a collision at the next slice cannot be accepted twice.
+        $currentSlice = (int) floor(time() / 30);
+        $previousSlice = $currentSlice - 1;
+
+        $this->assertNull(
+            $totp->verifyCodeOnce($secret, $totp->getCode($secret, $previousSlice), $previousSlice),
+        );
+    }
 }
