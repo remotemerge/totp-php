@@ -395,4 +395,41 @@ final class TotpTest extends TestCase
         $totp->configure(['algorithm' => 'SHA256']);
         $this->assertSame('sha256', $totp->getAlgorithm());
     }
+
+    /**
+     * Test that a failed configure() call leaves every previous value intact.
+     */
+    public function test_configure_failure_does_not_partially_mutate(): void
+    {
+        $totp = new Totp();
+
+        try {
+            $totp->configure(['algorithm' => 'sha512', 'digits' => 7]);
+            $this->fail('configure() should have thrown for digits=7.');
+        } catch (TotpException) {
+            // Expected; the instance must keep its original configuration.
+        }
+
+        $this->assertSame('sha1', $totp->getAlgorithm());
+        $this->assertSame(6, $totp->getDigits());
+        $this->assertSame(30, $totp->getPeriod());
+    }
+
+    /**
+     * Test that a failed period leaves an earlier valid algorithm unapplied.
+     */
+    public function test_configure_failure_on_period_does_not_apply_algorithm(): void
+    {
+        $totp = new Totp();
+
+        try {
+            $totp->configure(['algorithm' => 'sha256', 'period' => 0]);
+            $this->fail('configure() should have thrown for period=0.');
+        } catch (TotpException) {
+            // Expected; the instance must keep its original configuration.
+        }
+
+        $this->assertSame('sha1', $totp->getAlgorithm());
+        $this->assertSame(30, $totp->getPeriod());
+    }
 }
