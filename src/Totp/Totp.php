@@ -269,8 +269,7 @@ final class Totp extends AbstractTotp implements TotpInterface
             ];
         }
 
-        $decoded = Base32::decodeUpper($secret);
-        $lengthBytes = strlen($decoded);
+        $lengthBytes = intdiv(strlen(rtrim($secret, '=')) * 5, 8);
 
         if ($lengthBytes < 20) {
             $warnings[] = MessageStore::get('security.audit_weak_secret', $lengthBytes);
