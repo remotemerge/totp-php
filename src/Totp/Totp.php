@@ -240,6 +240,9 @@ final class Totp extends AbstractTotp implements TotpInterface
      * This method never throws exceptions; all issues are reported via the
      * returned array so callers can handle them gracefully.
      *
+     * `is_strong` means length >= 20 bytes and valid syntax, never entropy: 32 'A's
+     * decode to 20 zero bytes and report true. Randomness is unknowable from one value.
+     *
      * @param string $secret The secret key in Base32 format to audit.
      * @return array{length_bytes: int, is_strong: bool, warnings: list<string>} Diagnostic information.
      */
