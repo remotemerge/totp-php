@@ -48,7 +48,8 @@ try {
     echo json_encode(['valid' => $totp->verifyCode($data['secret'], $data['code'], 0)], JSON_THROW_ON_ERROR);
     exit;
 } catch (TotpException $totpException) {
-    http_response_code(500);
+    // Invalid caller input, not a server fault.
+    http_response_code(400);
     echo json_encode(['error' => $totpException->getMessage()], JSON_THROW_ON_ERROR);
     exit;
 }
