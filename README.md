@@ -207,6 +207,8 @@ Per the [Key URI Format](https://github.com/google/google-authenticator/wiki/Key
 
 Treat the URI and its QR image as the credential itself: both carry the raw secret. Keep them out of logs, analytics, debug traces, and third-party services.
 
+The default **SHA1 / 6 digits / 30 seconds** combination is the interoperability target for authenticator apps. Other algorithm, digit, and period combinations are valid per the specification but are not uniformly supported — test them against the apps you intend to support rather than assuming compatibility.
+
 ---
 
 ## **Customization Options**
