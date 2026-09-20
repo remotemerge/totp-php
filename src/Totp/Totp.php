@@ -177,14 +177,22 @@ final class Totp extends AbstractTotp implements TotpInterface
     /**
      * Verifies the TOTP code while preventing replay attacks.
      *
-     * Skips any time slices at or below the last accepted slice, ensuring a
-     * previously used code cannot be reused.
+     * Accepts only slices above $lastAcceptedSlice, and refuses that slice's own code
+     * (adjacent slices can collide on the same digits).
+     *
+     * Guarantees monotonic slice progression, not a full history of spent codes: one
+     * stored integer cannot express the latter. Rejecting any repeated code for its
+     * whole validity window needs an expiring per-credential record in the caller.
+     *
+     * The returned slice must be persisted with a compare-and-set against the value
+     * passed in; this class holds no state and cannot make that update atomic. Two
+     * concurrent requests reading the same slice will otherwise both succeed.
      *
      * @param string $secret The secret key in Base32 format.
      * @param string $code The code to verify.
-     * @param int $lastAcceptedSlice The last time slice that was successfully accepted.
+     * @param int $lastAcceptedSlice The last time slice that was successfully accepted. Use 0 on first login.
      * @param int $discrepancy The allowed discrepancy in time slices. Defaults to 1.
-     * @throws TotpException If the secret key is invalid or discrepancy is out of range.
+     * @throws TotpException If the secret key, code, discrepancy, or last accepted slice is invalid.
      * @return int|null The matched time slice if valid, or null if invalid or replay detected.
      */
     public function verifyCodeOnce(string $secret, string $code, int $lastAcceptedSlice, int $discrepancy = 1): ?int
