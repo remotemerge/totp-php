@@ -60,3 +60,7 @@ jobs:
 
       - name: Display the installed version
         run: composer show remotemerge/totp-php
+
+      # Installation alone proves nothing about the artifact actually working.
+      - name: Run the smoke test
+        run: php repo/.github/scripts/smoke-test.php
