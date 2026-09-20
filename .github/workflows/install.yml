@@ -6,6 +6,15 @@ on:
     types: [ published ]
     branches: [ main ]
 
+# Let each release finish; a newer one must not cancel its smoke test
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.release.tag_name || github.ref }}
+  cancel-in-progress: false
+
+# Minimum required permissions for security
+permissions:
+  contents: read
+
 jobs:
   install:
     # Run on the latest OS versions
