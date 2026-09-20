@@ -19,7 +19,13 @@ jobs:
   install:
     # Run on the latest OS versions
     runs-on: ${{ matrix.os }}
+
+    # Prevent hanging jobs
+    timeout-minutes: 15
+
     strategy:
+      # Run all matrix combinations to completion
+      fail-fast: false
       matrix:
         # Define the OS and PHP versions to test
         os: [ubuntu-latest, windows-latest, macos-latest]
