@@ -404,6 +404,8 @@ $totp->verifyCode($secret, $code, 3);
 
 Generate the `otpauth://` URI on the backend, then render the QR image locally in the browser. Avoid sending TOTP setup URIs to third-party QR image APIs because the URI contains the user's secret.
 
+> The example below imports the QR library from a CDN for brevity. Loading executable JavaScript from a third party onto an enrollment page is a separate trust decision from sending it your data: that script runs with access to the secret on the page. Bundle the library locally for production enrollment, serve it over TLS, and return enrollment responses with `Cache-Control: no-store`.
+
 ```php
 // secret.php
 use RemoteMerge\Totp\TotpFactory;
