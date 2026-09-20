@@ -10,9 +10,9 @@
 <div class="container mx-auto p-6 max-w-md">
     <!-- Enable 2FA Section -->
     <section class="bg-white p-8 rounded-xl shadow-lg text-center">
-        <h1 class="text-3xl font-bold text-gray-900 mb-4">Account Security</h1>
+        <h1 class="text-3xl font-bold text-gray-900 mb-4">TOTP Demo</h1>
         <p class="text-gray-600 mb-6">
-            Secure your account by enabling 2FA. Scan the QR code with your authenticator app.
+            Generate a secret, scan the QR code with your authenticator app, and check a code against it.
         </p>
 
         <!-- Enable 2FA Button -->
