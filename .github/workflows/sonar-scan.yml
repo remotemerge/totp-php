@@ -1,0 +1,37 @@
+name: SonarQube Scan
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 0 * * 1"
+
+jobs:
+  test:
+    name: Test and scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.1"
+          extensions: xdebug
+          coverage: xdebug
+
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --optimize-autoloader --prefer-dist
+
+      - name: Run tests with coverage
+        run: ./vendor/bin/phpunit
+        env:
+          XDEBUG_MODE: coverage
+
+      - name: Run SonarQube scan
+        uses: SonarSource/sonarqube-scan-action@v8
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
