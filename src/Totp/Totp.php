@@ -195,8 +195,10 @@ final class Totp extends AbstractTotp implements TotpInterface
 
         $this->validateSecret($secret);
         $this->validateCode($code);
+        $this->validateTimeSlice($lastAcceptedSlice);
 
         $currentSlice = $this->getCurrentTimeSlice();
+        $this->validateTimeSlice($currentSlice);
         $decodedSecret = Base32::decodeUpper($secret);
 
         for ($offset = -$discrepancy; $offset <= $discrepancy; ++$offset) {
