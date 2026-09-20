@@ -12,6 +12,7 @@ use RemoteMerge\Message\MessageStore;
 use RemoteMerge\Totp\AbstractTotp;
 use RemoteMerge\Totp\Totp;
 use RemoteMerge\Totp\TotpException;
+use RuntimeException;
 
 #[CoversClass(AbstractTotp::class)]
 final class AbstractTotpTest extends TestCase
@@ -266,6 +267,27 @@ final class AbstractTotpTest extends TestCase
         } finally {
             ini_set('error_log', $previousLog === false ? '' : $previousLog);
             unlink($logFile);
+        }
+    }
+
+    /**
+     * Test validateSecret emits no PHP warning for malformed newline-terminated input.
+     *
+     * @throws ReflectionException
+     */
+    public function test_validate_secret_rejects_trailing_newline_without_php_warning(): void
+    {
+        $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
+        set_error_handler(static function (int $_errno, string $errstr): bool {
+            throw new RuntimeException(sprintf('Unexpected PHP warning: %s', $errstr));
+        });
+
+        try {
+            $this->expectException(TotpException::class);
+            $this->expectExceptionMessage('The secret key contains invalid characters.');
+            $reflectionMethod->invoke($this->totp, "AAAAAAA\n");
+        } finally {
+            restore_error_handler();
         }
     }
 
