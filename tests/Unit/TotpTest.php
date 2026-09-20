@@ -432,4 +432,16 @@ final class TotpTest extends TestCase
         $this->assertSame('sha1', $totp->getAlgorithm());
         $this->assertSame(30, $totp->getPeriod());
     }
+
+    /**
+     * Test configure rejects a non-string algorithm with a TotpException rather than
+     * a native error or an array-to-string conversion warning.
+     */
+    public function test_configure_rejects_non_string_algorithm(): void
+    {
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('Unsupported hash algorithm.');
+        $totp = new Totp();
+        $totp->configure(['algorithm' => ['sha256']]);
+    }
 }
