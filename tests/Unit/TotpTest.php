@@ -552,4 +552,15 @@ final class TotpTest extends TestCase
         // Slice 0 remains usable and self-consistent.
         $this->assertTrue($totp->verifyCode($secret, $totp->getCode($secret, 0), 1, 0));
     }
+
+    /**
+     * Test verifyCode throws for a code carrying a trailing newline.
+     */
+    public function test_verify_code_rejects_trailing_newline_code(): void
+    {
+        $this->expectException(TotpException::class);
+        $this->expectExceptionMessage('The code must be a 6-digit number.');
+        $totp = new Totp();
+        $totp->verifyCode('JBSWY3DPEHPK3PXP', "123456\n");
+    }
 }
