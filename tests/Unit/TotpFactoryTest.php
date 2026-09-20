@@ -6,6 +6,7 @@ namespace Tests\Unit;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use RemoteMerge\Totp\Totp;
 use RemoteMerge\Totp\TotpException;
 use RemoteMerge\Totp\TotpFactory;
 use RemoteMerge\Totp\TotpInterface;
@@ -22,6 +23,9 @@ final class TotpFactoryTest extends TestCase
     {
         $totp = TotpFactory::create();
         $this->assertInstanceOf(TotpInterface::class, $totp);
+        // The factory returns the concrete class, so consumers keep the interface
+        // contract while the advanced methods stay statically available.
+        $this->assertInstanceOf(Totp::class, $totp);
     }
 
     /**
