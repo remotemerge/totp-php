@@ -50,4 +50,5 @@ ehthumbs_vista.db
 *.log
 *.zip
 .env
-phpstan.*
+phpstan-baseline.neon
+phpstan.cache

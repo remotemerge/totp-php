@@ -1,0 +1,15 @@
+parameters:
+  level: 10
+  phpVersion: 80100
+
+  paths:
+    - src
+    - tests
+
+  ignoreErrors:
+    -
+      identifier: assign.propertyType
+      path: src/Message/MessageStore.php
+    -
+      identifier: argument.type
+      path: src/Message/MessageStore.php
