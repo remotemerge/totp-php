@@ -160,8 +160,13 @@ final class Totp extends AbstractTotp implements TotpInterface
         $this->validateTimeSlice($currentSlice);
         $decodedSecret = Base32::decodeUpper($secret);
 
-        for ($offset = -$discrepancy; $offset <= $discrepancy; ++$offset) {
-            if (hash_equals($this->getCodeFromDecodedSecret($decodedSecret, $currentSlice + $offset), $code)) {
+        $firstSlice = max(0, $currentSlice - $discrepancy);
+        $lastSlice = $currentSlice + min($discrepancy, PHP_INT_MAX - $currentSlice);
+
+        // Counting steps keeps the candidate an int. Incrementing past PHP_INT_MAX
+        // silently yields a float, which the strictly typed HMAC helper rejects.
+        for ($step = 0, $steps = $lastSlice - $firstSlice; $step <= $steps; ++$step) {
+            if (hash_equals($this->getCodeFromDecodedSecret($decodedSecret, $firstSlice + $step), $code)) {
                 return true;
             }
         }
