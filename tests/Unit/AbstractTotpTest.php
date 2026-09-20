@@ -251,17 +251,21 @@ final class AbstractTotpTest extends TestCase
     public function test_validate_secret_logs_warning_for_weak_secret(): void
     {
         $reflectionMethod = $this->reflectionClass->getMethod('validateSecret');
-        set_error_handler(null);
-        $previousHandler = set_error_handler(null);
-        ini_set('error_log', '/dev/null');
+        $logFile = tempnam(sys_get_temp_dir(), 'totp-log-');
+        $this->assertIsString($logFile);
+        $previousLog = ini_get('error_log');
 
-        // Use output buffering to capture error_log output sent to stderr/stdout
-        // Instead, verify indirectly: no exception is thrown (the log call is non-throwing)
-        $this->expectNotToPerformAssertions();
-        $reflectionMethod->invoke($this->totp, 'ABCDEFGH');
+        try {
+            ini_set('error_log', $logFile);
+            $reflectionMethod->invoke($this->totp, 'ABCDEFGH');
 
-        if ($previousHandler !== null) {
-            set_error_handler($previousHandler);
+            $logged = (string) file_get_contents($logFile);
+            $this->assertStringContainsString('Weak secret detected (5 bytes', $logged);
+            // The log must describe the length only; it must never echo the secret.
+            $this->assertStringNotContainsString('ABCDEFGH', $logged);
+        } finally {
+            ini_set('error_log', $previousLog === false ? '' : $previousLog);
+            unlink($logFile);
         }
     }
 
