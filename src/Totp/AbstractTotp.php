@@ -38,12 +38,17 @@ abstract class AbstractTotp
      * Initializes the TOTP instance with optional configuration options.
      *
      * @param array<string, mixed> $options An associative array of configuration options.
-     *        Supported options: 'max_discrepancy' (int).
+     *        Supported options: 'max_discrepancy' (non-negative int).
+     * @throws TotpException If 'max_discrepancy' is not a non-negative integer.
      */
     public function __construct(array $options = [])
     {
         if (isset($options['max_discrepancy'])) {
-            $this->maxDiscrepancy = (int) $options['max_discrepancy'];
+            if (!is_int($options['max_discrepancy']) || $options['max_discrepancy'] < 0) {
+                throw new TotpException(MessageStore::get('configuration.invalid_max_discrepancy'));
+            }
+
+            $this->maxDiscrepancy = $options['max_discrepancy'];
         }
     }
 
