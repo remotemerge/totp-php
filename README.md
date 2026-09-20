@@ -521,4 +521,6 @@ All contributions are reviewed and appreciated.
 
 ## **Screenshots**
 
+The bundled demonstration calculator. The QR code shown is a disposable example, never a live account credential.
+
 ![Screenshot 1](public/img/demo.png)
