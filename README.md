@@ -459,6 +459,8 @@ Test the TOTP PHP library locally using Docker. This method automatically sets u
 
 3. Access the application at `http://localhost:8080`.
 
+   > The bundled demo is a **stateless TOTP calculator**, not a reference authentication flow. The browser supplies the secret it wants verified, so the caller controls both the key and the code; nothing is enrolled and no identity is proven. In production, load the secret for an authenticated or pending-login account from server-side storage, rate limit attempts, and persist replay state atomically. The demo is published on loopback only.
+
 4. (Optional) Access the container shell for development:
 
    ```bash
